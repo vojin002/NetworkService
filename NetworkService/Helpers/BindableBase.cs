@@ -14,7 +14,7 @@ namespace NetworkService.Helpers
             PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        protected virtual void OnPropertyChanged(string propertyName)
+        public virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }

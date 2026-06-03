@@ -1,12 +1,90 @@
-﻿<Window x:Class="NetworkService.MainWindow"
+<Window x:Class="NetworkService.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:NetworkService"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        xmlns:notifications="clr-namespace:Notification.Wpf.Controls;assembly=Notification.Wpf"
+        xmlns:viewModel="clr-namespace:NetworkService.ViewModel"
+        xmlns:views="clr-namespace:NetworkService.Views"
+        Title="Network Service - Reactor Monitoring"
+        Height="720" Width="1280"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BackgroundBrush}">
+
+    <Window.DataContext>
+        <viewModel:MainWindowViewModel/>
+    </Window.DataContext>
+
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type viewModel:NetworkEntitiesViewModel}">
+            <views:NetworkEntitiesView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModel:MeasurementGraphViewModel}">
+            <views:MeasurementGraphView/>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Window.InputBindings>
+        <KeyBinding Key="F1" Command="{Binding NavCommand}" CommandParameter="entities"/>
+        <KeyBinding Key="F2" Command="{Binding NavCommand}" CommandParameter="graph"/>
+    </Window.InputBindings>
+
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="480"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <notifications:NotificationArea x:Name="WindowNotificationArea"
+                                        Panel.ZIndex="1000"
+                                        MaxItems="3"
+                                        Position="TopRight"/>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Grid.ColumnSpan="2"
+                Background="{StaticResource PanelBrush}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="0,0,0,2">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="480"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           Text="NETWORK DISPLAY"
+                           Style="{StaticResource SectionHeaderStyle}"
+                           VerticalAlignment="Center"
+                           Margin="15,0,0,0"
+                           FontSize="16"/>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal"
+                            VerticalAlignment="Center" Margin="15,0,0,0">
+                    <Button Content="Network Entities [F1]"
+                            Command="{Binding NavCommand}"
+                            CommandParameter="entities"
+                            Style="{StaticResource NavButtonStyle}"
+                            ToolTip="Go to Network Entities view (F1)"/>
+                    <Button Content="Measurement Graph [F2]"
+                            Command="{Binding NavCommand}"
+                            CommandParameter="graph"
+                            Style="{StaticResource NavButtonStyle}"
+                            ToolTip="Go to Measurement Graph view (F2)"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Left: Network Display (always visible) -->
+        <Border Grid.Row="1" Grid.Column="0"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="0,0,2,0">
+            <views:NetworkDisplayView DataContext="{Binding NetworkDisplayVM}"/>
+        </Border>
+
+        <!-- Right: switching views -->
+        <ContentControl Grid.Row="1" Grid.Column="1"
+                        Content="{Binding CurrentViewModel}"/>
     </Grid>
 </Window>
