@@ -15,7 +15,7 @@ namespace NetworkService.ViewModel
         public MyICommand<string> NavCommand { get; private set; }
 
         public NetworkEntitiesViewModel networkEntitiesViewModel;
-        public NetworkDisplayViewModel networkDisplayViewModel;
+        public NetworkDisplayViewModel NetworkDisplayVM { get; set; }
         public MeasurementGraphViewModel measurementGraphViewModel;
 
         private BindableBase currentViewModel;
@@ -28,7 +28,7 @@ namespace NetworkService.ViewModel
             NavCommand = new MyICommand<string>(OnNav);
 
             networkEntitiesViewModel = new NetworkEntitiesViewModel();
-            networkDisplayViewModel = new NetworkDisplayViewModel();
+            NetworkDisplayVM = new NetworkDisplayViewModel();
             measurementGraphViewModel = new MeasurementGraphViewModel();
 
             CurrentViewModel = networkEntitiesViewModel;

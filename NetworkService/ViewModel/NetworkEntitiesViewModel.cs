@@ -53,7 +53,8 @@ namespace NetworkService.ViewModel
             SaveSearchCommand = new MyICommand(OnSaveSearch);
             LoadSavedSearchCommand = new MyICommand<string>(OnLoadSavedSearch);
 
-            LoadInitialSensors();
+            if (AllSensors.Count == 0)
+                LoadInitialSensors();
         }
 
         private void LoadInitialSensors()
