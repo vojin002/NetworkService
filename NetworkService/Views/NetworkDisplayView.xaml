@@ -5,7 +5,6 @@
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -13,17 +12,21 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Auto arrange button -->
-        <Button Grid.Row="0" Grid.ColumnSpan="2"
-                Content="Auto Arrange All"
-                Command="{Binding AutoArrangeCommand}"
-                Style="{StaticResource ActionButtonStyle}"
-                HorizontalAlignment="Left"
-                Margin="0,0,0,8"
-                ToolTip="Automatically place all sensors on the grid"/>
+        <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,0,0,8">
+            <Button x:Name="AutoArrangeBtn"
+                    Content="Auto Arrange All"
+                    Style="{StaticResource ActionButtonStyle}"
+                    Click="AutoArrangeBtn_Click"
+                    ToolTip="Automatically place all sensors on the grid"/>
+            <Button x:Name="ConnectBtn"
+                    Content="Connect Sensors"
+                    Style="{StaticResource NavButtonStyle}"
+                    Margin="8,0,0,0"
+                    Click="ConnectBtn_Click"
+                    ToolTip="Click to enter connect mode, then click two sensors to draw a line"/>
+        </StackPanel>
 
-        <!-- TreeView with sensors grouped by type -->
-        <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="0"
+        <Border Grid.Row="1" Grid.Column="0"
                 Background="{StaticResource PanelBrush}"
                 BorderBrush="{StaticResource BorderBrush}"
                 BorderThickness="1" Margin="0,0,8,0" CornerRadius="4">
@@ -42,24 +45,24 @@
                                        Foreground="{StaticResource TextBrush}"
                                        Padding="2" FontSize="12"
                                        Cursor="Hand"
-                                       ToolTip="Drag to place on grid"/>
+                                       ToolTip="Drag to place on the grid"/>
                         </DataTemplate>
                     </TreeView.ItemTemplate>
                 </TreeView>
             </StackPanel>
         </Border>
 
-        <!-- Canvas grid 4x3 = 12 slots -->
-        <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1"
+        <Border Grid.Row="1" Grid.Column="1"
                 Background="{StaticResource PanelBrush}"
                 BorderBrush="{StaticResource BorderBrush}"
                 BorderThickness="1" CornerRadius="4">
-            <UniformGrid x:Name="CanvasGrid" Rows="3" Columns="4"
-                         AllowDrop="True"
-                         DragOver="CanvasGrid_DragOver"
-                         Drop="CanvasGrid_Drop">
-                <!-- 12 canvas slots created in code-behind -->
-            </UniformGrid>
+            <Grid>
+                <UniformGrid x:Name="CanvasGrid" Rows="3" Columns="4"
+                             AllowDrop="True"
+                             DragOver="CanvasGrid_DragOver"
+                             Drop="CanvasGrid_Drop"/>
+                <Canvas x:Name="LinesCanvas" IsHitTestVisible="False"/>
+            </Grid>
         </Border>
     </Grid>
 </UserControl>
