@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Windows.Threading;
 
 namespace NetworkService.ViewModel
 {
@@ -13,6 +14,8 @@ namespace NetworkService.ViewModel
         private ObservableCollection<TemperatureSensor> sensorList;
         private List<MeasurementPoint> graphPoints;
 
+        private DispatcherTimer refreshTimer;
+
         public MyICommand RefreshGraphCommand { get; set; }
 
         public MeasurementGraphViewModel()
@@ -20,6 +23,11 @@ namespace NetworkService.ViewModel
             SensorList = new ObservableCollection<TemperatureSensor>();
             GraphPoints = new List<MeasurementPoint>();
             RefreshGraphCommand = new MyICommand(OnRefreshGraph);
+
+            refreshTimer = new DispatcherTimer();
+            refreshTimer.Interval = TimeSpan.FromSeconds(3);
+            refreshTimer.Tick += (s, e) => OnRefreshGraph();
+            refreshTimer.Start();
 
             LoadSensors();
         }
@@ -55,7 +63,7 @@ namespace NetworkService.ViewModel
                 SensorList.Add(s);
         }
 
-        private void OnRefreshGraph()
+        public void OnRefreshGraph()
         {
             if (SelectedSensor == null) return;
 

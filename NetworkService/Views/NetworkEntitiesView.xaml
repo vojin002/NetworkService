@@ -10,7 +10,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Add sensor panel -->
         <Border Grid.Row="0" Background="{StaticResource PanelBrush}"
                 BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
                 Padding="12" Margin="0,0,0,10" CornerRadius="4">
@@ -33,7 +32,6 @@
             </StackPanel>
         </Border>
 
-        <!-- Search panel -->
         <Border Grid.Row="1" Background="{StaticResource PanelBrush}"
                 BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
                 Padding="12" Margin="0,0,0,10" CornerRadius="4">
@@ -73,7 +71,6 @@
             </StackPanel>
         </Border>
 
-        <!-- Delete button -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,8">
             <Button Content="Delete Selected"
                     Command="{Binding DeleteSensorCommand}"
@@ -81,7 +78,6 @@
                     ToolTip="Delete the selected sensor from the list"/>
         </StackPanel>
 
-        <!-- Sensors table -->
         <DataGrid Grid.Row="3"
                   ItemsSource="{Binding FilteredSensors}"
                   SelectedItem="{Binding SelectedSensor}"

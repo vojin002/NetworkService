@@ -38,7 +38,6 @@ namespace NetworkService.ViewModel
 
         private void OnAutoArrange()
         {
-            // auto arrange is handled in code-behind due to canvas manipulation
         }
     }
 }

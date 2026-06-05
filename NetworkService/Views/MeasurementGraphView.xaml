@@ -3,9 +3,30 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="{StaticResource BackgroundBrush}">
     <Grid Margin="15">
-        <TextBlock Text="Measurement Graph - Coming soon"
-                   Style="{StaticResource SectionHeaderStyle}"
-                   VerticalAlignment="Center"
-                   HorizontalAlignment="Center"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
+            <TextBlock Text="Select sensor:" Style="{StaticResource LabelStyle}" Margin="0,0,10,0"/>
+            <ComboBox x:Name="SensorComboBox"
+                      ItemsSource="{Binding SensorList}"
+                      SelectedItem="{Binding SelectedSensor}"
+                      DisplayMemberPath="Name"
+                      Width="180"/>
+            <Button Content="Refresh"
+                    Command="{Binding RefreshGraphCommand}"
+                    Style="{StaticResource ActionButtonStyle}"
+                    Margin="10,0,0,0"
+                    ToolTip="Manually refresh the graph"/>
+        </StackPanel>
+
+        <Border Grid.Row="1"
+                Background="{StaticResource PanelBrush}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="1" CornerRadius="4">
+            <Canvas x:Name="GraphCanvas" Margin="20"/>
+        </Border>
     </Grid>
 </UserControl>

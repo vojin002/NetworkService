@@ -92,7 +92,6 @@ namespace NetworkService.ViewModel
                         }
                         else
                         {
-                            // format: "SensorName:Value"
                             string[] parts = incomming.Split(':');
                             if (parts.Length == 2)
                             {
