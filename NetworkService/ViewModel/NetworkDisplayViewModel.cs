@@ -1,6 +1,7 @@
 using NetworkService.Helpers;
 using NetworkService.Model;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace NetworkService.ViewModel
 {
@@ -16,6 +17,23 @@ namespace NetworkService.ViewModel
             AutoArrangeCommand = new MyICommand(OnAutoArrange);
 
             RefreshTreeView();
+
+            if (NetworkEntitiesViewModel.AllSensors != null)
+                NetworkEntitiesViewModel.AllSensors.CollectionChanged += AllSensors_CollectionChanged;
+        }
+
+        private void AllSensors_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (TemperatureSensor sensor in e.NewItems)
+                    SensorsInTreeView.Add(sensor);
+            }
+            if (e.OldItems != null)
+            {
+                foreach (TemperatureSensor sensor in e.OldItems)
+                    SensorsInTreeView.Remove(sensor);
+            }
         }
 
         public ObservableCollection<TemperatureSensor> SensorsInTreeView

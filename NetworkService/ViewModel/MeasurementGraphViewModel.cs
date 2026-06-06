@@ -68,7 +68,6 @@ namespace NetworkService.ViewModel
             if (SelectedSensor == null) return;
 
             GraphPoints = LoadLastFiveFromLog(SelectedSensor.Name);
-            OnPropertyChanged("GraphPoints");
         }
 
         private List<MeasurementPoint> LoadLastFiveFromLog(string sensorName)

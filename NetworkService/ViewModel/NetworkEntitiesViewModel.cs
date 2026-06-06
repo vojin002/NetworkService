@@ -21,8 +21,12 @@ namespace NetworkService.ViewModel
         private string nameError;
         private string typeError;
 
+        private bool showDeleteConfirmation;
+
         public MyICommand AddSensorCommand { get; set; }
         public MyICommand DeleteSensorCommand { get; set; }
+        public MyICommand ConfirmDeleteCommand { get; set; }
+        public MyICommand CancelDeleteCommand { get; set; }
         public MyICommand SearchCommand { get; set; }
         public MyICommand ClearSearchCommand { get; set; }
         public MyICommand SaveSearchCommand { get; set; }
@@ -48,6 +52,8 @@ namespace NetworkService.ViewModel
 
             AddSensorCommand = new MyICommand(OnAddSensor);
             DeleteSensorCommand = new MyICommand(OnDeleteSensor, CanDeleteSensor);
+            ConfirmDeleteCommand = new MyICommand(OnConfirmDelete);
+            CancelDeleteCommand = new MyICommand(OnCancelDelete);
             SearchCommand = new MyICommand(OnSearch);
             ClearSearchCommand = new MyICommand(OnClearSearch);
             SaveSearchCommand = new MyICommand(OnSaveSearch);
@@ -143,6 +149,16 @@ namespace NetworkService.ViewModel
             set { SetProperty(ref typeError, value); }
         }
 
+        public bool ShowDeleteConfirmation
+        {
+            get { return showDeleteConfirmation; }
+            set
+            {
+                SetProperty(ref showDeleteConfirmation, value);
+                DeleteSensorCommand.RaiseCanExecuteChanged();
+            }
+        }
+
         private void OnAddSensor()
         {
             TypeError = "";
@@ -178,15 +194,27 @@ namespace NetworkService.ViewModel
         private void OnDeleteSensor()
         {
             if (SelectedSensor == null) return;
+            ShowDeleteConfirmation = true;
+        }
+
+        private void OnConfirmDelete()
+        {
+            if (SelectedSensor == null) return;
 
             AllSensors.Remove(SelectedSensor);
+            ShowDeleteConfirmation = false;
             OnClearSearch();
             RestartSimulator();
         }
 
+        private void OnCancelDelete()
+        {
+            ShowDeleteConfirmation = false;
+        }
+
         private bool CanDeleteSensor()
         {
-            return SelectedSensor != null;
+            return SelectedSensor != null && !ShowDeleteConfirmation;
         }
 
         private void OnSearch()

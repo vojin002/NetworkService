@@ -71,12 +71,40 @@
             </StackPanel>
         </Border>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,8">
+        <Grid Grid.Row="2" Margin="0,0,0,8">
             <Button Content="Delete Selected"
                     Command="{Binding DeleteSensorCommand}"
-                    Style="{StaticResource DangerButtonStyle}"
-                    ToolTip="Delete the selected sensor from the list"/>
-        </StackPanel>
+                    HorizontalAlignment="Left"
+                    ToolTip="Delete the selected sensor from the list">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource DangerButtonStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ShowDeleteConfirmation}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ShowDeleteConfirmation}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                <TextBlock Text="Delete this sensor?" Style="{StaticResource LabelStyle}" Margin="0,0,12,0"/>
+                <Button Content="Yes" Command="{Binding ConfirmDeleteCommand}"
+                        Style="{StaticResource DangerButtonStyle}" Margin="0,0,6,0"/>
+                <Button Content="No" Command="{Binding CancelDeleteCommand}"
+                        Style="{StaticResource NavButtonStyle}"/>
+            </StackPanel>
+        </Grid>
 
         <DataGrid Grid.Row="3"
                   ItemsSource="{Binding FilteredSensors}"

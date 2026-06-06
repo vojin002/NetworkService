@@ -17,7 +17,7 @@ namespace NetworkService.Views
         private bool connectMode = false;
         private Border firstConnectBorder = null;
 
-        private List<(Border, Border)> connections = new List<(Border, Border)>();
+        private List<Border[]> connections = new List<Border[]>();
 
         public NetworkDisplayView()
         {
@@ -105,8 +105,8 @@ namespace NetworkService.Views
                 bool alreadyConnected = false;
                 foreach (var conn in connections)
                 {
-                    if ((conn.Item1 == firstConnectBorder && conn.Item2 == slot) ||
-                        (conn.Item1 == slot && conn.Item2 == firstConnectBorder))
+                    if ((conn[0] == firstConnectBorder && conn[1] == slot) ||
+                        (conn[0] == slot && conn[1] == firstConnectBorder))
                     {
                         alreadyConnected = true;
                         break;
@@ -114,7 +114,7 @@ namespace NetworkService.Views
                 }
 
                 if (!alreadyConnected)
-                    connections.Add((firstConnectBorder, slot));
+                    connections.Add(new Border[] { firstConnectBorder, slot });
 
                 ResetSlotBorder(firstConnectBorder);
                 firstConnectBorder = null;
@@ -308,7 +308,15 @@ namespace NetworkService.Views
         private void RemoveConnectionsForSlot(Border slot)
         {
             if (slot == null) return;
-            connections.RemoveAll(c => c.Item1 == slot || c.Item2 == slot);
+
+            var toRemove = new List<Border[]>();
+            foreach (var conn in connections)
+            {
+                if (conn[0] == slot || conn[1] == slot)
+                    toRemove.Add(conn);
+            }
+            foreach (var conn in toRemove)
+                connections.Remove(conn);
         }
 
         public void RemoveSensorFromGrid(TemperatureSensor sensor)
@@ -334,8 +342,8 @@ namespace NetworkService.Views
 
             foreach (var conn in connections)
             {
-                var p1 = GetSlotCenter(conn.Item1);
-                var p2 = GetSlotCenter(conn.Item2);
+                var p1 = GetSlotCenter(conn[0]);
+                var p2 = GetSlotCenter(conn[1]);
 
                 if (p1 == null || p2 == null) continue;
 
@@ -375,9 +383,8 @@ namespace NetworkService.Views
     {
         public object Convert(object value, System.Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if (value is bool b)
-                return b ? "Normal" : "! ALARM";
-            return "";
+            bool b = (bool)value;
+            return b ? "Normal" : "! ALARM";
         }
 
         public object ConvertBack(object value, System.Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -390,10 +397,10 @@ namespace NetworkService.Views
     {
         public object Convert(object value, System.Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if (value is bool b)
-                return b ? new SolidColorBrush(Color.FromRgb(0, 212, 170))
-                         : new SolidColorBrush(Color.FromRgb(255, 68, 68));
-            return new SolidColorBrush(Colors.White);
+            bool b = (bool)value;
+            if (b)
+                return new SolidColorBrush(Color.FromRgb(0, 212, 170));
+            return new SolidColorBrush(Color.FromRgb(255, 68, 68));
         }
 
         public object ConvertBack(object value, System.Type targetType, object parameter, System.Globalization.CultureInfo culture)
