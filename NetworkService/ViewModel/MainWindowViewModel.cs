@@ -28,6 +28,7 @@ namespace NetworkService.ViewModel
             NavCommand = new MyICommand<string>(OnNav);
 
             networkEntitiesViewModel = new NetworkEntitiesViewModel();
+            networkEntitiesViewModel.ShowNotification = ShowToast;
             NetworkDisplayVM = new NetworkDisplayViewModel();
             measurementGraphViewModel = new MeasurementGraphViewModel();
 
@@ -39,7 +40,22 @@ namespace NetworkService.ViewModel
         public BindableBase CurrentViewModel
         {
             get { return currentViewModel; }
-            set { SetProperty(ref currentViewModel, value); }
+            set
+            {
+                SetProperty(ref currentViewModel, value);
+                OnPropertyChanged("IsEntitiesViewActive");
+                OnPropertyChanged("IsGraphViewActive");
+            }
+        }
+
+        public bool IsEntitiesViewActive
+        {
+            get { return currentViewModel is NetworkEntitiesViewModel; }
+        }
+
+        public bool IsGraphViewActive
+        {
+            get { return currentViewModel is MeasurementGraphViewModel; }
         }
 
         private void OnNav(string destination)

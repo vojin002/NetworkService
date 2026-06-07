@@ -38,6 +38,8 @@
         </Grid.ColumnDefinitions>
 
         <notifications:NotificationArea x:Name="WindowNotificationArea"
+                                        Grid.RowSpan="2"
+                                        Grid.ColumnSpan="2"
                                         Panel.ZIndex="1000"
                                         MaxItems="3"
                                         Position="TopRight"/>
@@ -45,32 +47,57 @@
         <Border Grid.Row="0" Grid.ColumnSpan="2"
                 Background="{StaticResource PanelBrush}"
                 BorderBrush="{StaticResource BorderBrush}"
-                BorderThickness="0,0,0,2">
+                BorderThickness="0,0,0,1">
+            <Border.Effect>
+                <DropShadowEffect Color="#CBD5E0" BlurRadius="6" ShadowDepth="2" Direction="270" Opacity="0.5"/>
+            </Border.Effect>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="480"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0"
-                           Text="NETWORK DISPLAY"
-                           Style="{StaticResource SectionHeaderStyle}"
-                           VerticalAlignment="Center"
-                           Margin="15,0,0,0"
-                           FontSize="16"/>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="15,0,0,0">
+                    <Border Width="4" Height="22" CornerRadius="2"
+                            Background="{StaticResource AccentBrush}" Margin="0,0,10,0"/>
+                    <TextBlock Text="NETWORK DISPLAY"
+                               Style="{StaticResource SectionHeaderStyle}"
+                               Margin="0"
+                               FontSize="16"/>
+                </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal"
                             VerticalAlignment="Center" Margin="15,0,0,0">
                     <Button Content="Network Entities [F1]"
                             Command="{Binding NavCommand}"
                             CommandParameter="entities"
-                            Style="{StaticResource NavButtonStyle}"
-                            ToolTip="Go to Network Entities view (F1)"/>
+                            ToolTip="Go to Network Entities view (F1)">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource NavButtonStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsEntitiesViewActive}" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                     <Button Content="Measurement Graph [F2]"
                             Command="{Binding NavCommand}"
                             CommandParameter="graph"
-                            Style="{StaticResource NavButtonStyle}"
-                            ToolTip="Go to Measurement Graph view (F2)"/>
+                            ToolTip="Go to Measurement Graph view (F2)">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource NavButtonStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsGraphViewActive}" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                 </StackPanel>
             </Grid>
         </Border>
