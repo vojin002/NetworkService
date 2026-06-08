@@ -33,6 +33,7 @@
             <StackPanel>
                 <TextBlock Text="Sensors" Style="{StaticResource SectionHeaderStyle}"
                            Margin="8,8,8,4" FontSize="13"/>
+                <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Margin="8,0,8,4"/>
                 <TreeView x:Name="SensorTreeView"
                           ItemsSource="{Binding SensorsInTreeView}"
                           Background="Transparent"
@@ -41,11 +42,17 @@
                           PreviewMouseLeftButtonDown="TreeView_PreviewMouseLeftButtonDown">
                     <TreeView.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Name}"
-                                       Foreground="{StaticResource TextBrush}"
-                                       Padding="2" FontSize="12"
-                                       Cursor="Hand"
-                                       ToolTip="Drag to place on the grid"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,2">
+                                <Ellipse Width="7" Height="7"
+                                         Fill="{StaticResource AccentBrush}"
+                                         VerticalAlignment="Center"
+                                         Margin="0,0,6,0"/>
+                                <TextBlock Text="{Binding Name}"
+                                           Foreground="{StaticResource TextBrush}"
+                                           FontSize="12"
+                                           VerticalAlignment="Center"
+                                           ToolTip="Drag to place on the grid"/>
+                            </StackPanel>
                         </DataTemplate>
                     </TreeView.ItemTemplate>
                 </TreeView>

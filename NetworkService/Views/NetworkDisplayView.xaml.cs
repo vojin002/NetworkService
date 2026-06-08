@@ -38,13 +38,21 @@ namespace NetworkService.Views
                 var slot = new Border
                 {
                     Margin = new Thickness(4),
-                    BorderBrush = new SolidColorBrush(Color.FromRgb(15, 52, 96)),
+                    BorderBrush = new SolidColorBrush(Color.FromRgb(203, 213, 224)),
                     BorderThickness = new Thickness(1),
-                    Background = new SolidColorBrush(Color.FromRgb(13, 17, 23)),
+                    Background = new SolidColorBrush(Color.FromRgb(240, 244, 248)),
                     CornerRadius = new CornerRadius(4),
                     AllowDrop = true,
                     Tag = null,
-                    Cursor = Cursors.Hand
+                    Cursor = Cursors.Hand,
+                    Child = new TextBlock
+                    {
+                        Text = "+",
+                        FontSize = 18,
+                        Foreground = new SolidColorBrush(Color.FromRgb(200, 210, 220)),
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center
+                    }
                 };
 
                 slot.Drop += Slot_Drop;
@@ -131,12 +139,12 @@ namespace NetworkService.Views
             var sensor = slot.Tag as TemperatureSensor;
             if (sensor != null && !sensor.IsValueValid)
             {
-                slot.BorderBrush = new SolidColorBrush(Color.FromRgb(255, 68, 68));
+                slot.BorderBrush = new SolidColorBrush(Color.FromRgb(211, 47, 47));
                 slot.BorderThickness = new Thickness(2);
             }
             else
             {
-                slot.BorderBrush = new SolidColorBrush(Color.FromRgb(15, 52, 96));
+                slot.BorderBrush = new SolidColorBrush(Color.FromRgb(203, 213, 224));
                 slot.BorderThickness = new Thickness(1);
             }
         }
@@ -197,7 +205,7 @@ namespace NetworkService.Views
             var nameText = new TextBlock
             {
                 Text = sensor.Name,
-                Foreground = new SolidColorBrush(Color.FromRgb(0, 212, 170)),
+                Foreground = new SolidColorBrush(Color.FromRgb(0, 120, 212)),
                 FontWeight = FontWeights.Bold,
                 FontSize = 11,
                 TextWrapping = TextWrapping.Wrap
@@ -206,14 +214,14 @@ namespace NetworkService.Views
             var idText = new TextBlock
             {
                 Text = "ID: " + sensor.Id,
-                Foreground = new SolidColorBrush(Color.FromRgb(224, 224, 224)),
+                Foreground = new SolidColorBrush(Color.FromRgb(80, 80, 80)),
                 FontSize = 10
             };
 
             var valueText = new TextBlock
             {
                 FontSize = 10,
-                Foreground = new SolidColorBrush(Color.FromRgb(224, 224, 224))
+                Foreground = new SolidColorBrush(Color.FromRgb(80, 80, 80))
             };
             var valueBinding = new System.Windows.Data.Binding("LastMeasuredValue")
             {
@@ -249,17 +257,24 @@ namespace NetworkService.Views
             }
             else
             {
-                slot.BorderBrush = new SolidColorBrush(Color.FromRgb(15, 52, 96));
+                slot.BorderBrush = new SolidColorBrush(Color.FromRgb(203, 213, 224));
                 slot.BorderThickness = new Thickness(1);
             }
         }
 
         private void ClearSlot(Border slot)
         {
-            slot.Child = null;
             slot.Tag = null;
-            slot.BorderBrush = new SolidColorBrush(Color.FromRgb(15, 52, 96));
+            slot.BorderBrush = new SolidColorBrush(Color.FromRgb(203, 213, 224));
             slot.BorderThickness = new Thickness(1);
+            slot.Child = new TextBlock
+            {
+                Text = "+",
+                FontSize = 18,
+                Foreground = new SolidColorBrush(Color.FromRgb(200, 210, 220)),
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
         }
 
         private void AutoArrangeBtn_Click(object sender, RoutedEventArgs e)
@@ -399,8 +414,8 @@ namespace NetworkService.Views
         {
             bool b = (bool)value;
             if (b)
-                return new SolidColorBrush(Color.FromRgb(0, 212, 170));
-            return new SolidColorBrush(Color.FromRgb(255, 68, 68));
+                return new SolidColorBrush(Color.FromRgb(0, 150, 100));
+            return new SolidColorBrush(Color.FromRgb(211, 47, 47));
         }
 
         public object ConvertBack(object value, System.Type targetType, object parameter, System.Globalization.CultureInfo culture)
