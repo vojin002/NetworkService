@@ -1,5 +1,7 @@
 using NetworkService.Helpers;
 using NetworkService.Model;
+using Notification.Wpf;
+using System;
 using System.Collections.ObjectModel;
 
 namespace NetworkService.ViewModel
@@ -7,6 +9,8 @@ namespace NetworkService.ViewModel
     public class NetworkEntitiesViewModel : BindableBase
     {
         public static ObservableCollection<TemperatureSensor> AllSensors { get; set; }
+
+        public Action<string, string, NotificationType> ShowNotification { get; set; }
 
         private ObservableCollection<TemperatureSensor> filteredSensors;
         private TemperatureSensor selectedSensor;
@@ -189,6 +193,9 @@ namespace NetworkService.ViewModel
             AllSensors.Add(newSensor);
             OnClearSearch();
             RestartSimulator();
+
+            if (ShowNotification != null)
+                ShowNotification("Sensor Added", newSensor.Name + " (" + newSensor.Type.Name + ")", NotificationType.Success);
         }
 
         private void OnDeleteSensor()
@@ -201,10 +208,14 @@ namespace NetworkService.ViewModel
         {
             if (SelectedSensor == null) return;
 
+            string deletedName = SelectedSensor.Name;
             AllSensors.Remove(SelectedSensor);
             ShowDeleteConfirmation = false;
             OnClearSearch();
             RestartSimulator();
+
+            if (ShowNotification != null)
+                ShowNotification("Sensor Deleted", deletedName, NotificationType.Warning);
         }
 
         private void OnCancelDelete()
