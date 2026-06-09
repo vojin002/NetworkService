@@ -383,7 +383,9 @@ namespace NetworkService.Views
 
             try
             {
-                var transform = slot.TransformToAncestor(LinesCanvas);
+                var parent = LinesCanvas.Parent as UIElement;
+                if (parent == null) return null;
+                var transform = slot.TransformToAncestor(parent);
                 var topLeft = transform.Transform(new Point(0, 0));
                 return new Point(topLeft.X + slot.ActualWidth / 2, topLeft.Y + slot.ActualHeight / 2);
             }
