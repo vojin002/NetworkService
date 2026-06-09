@@ -8,19 +8,29 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
-            <TextBlock Text="Select sensor:" Style="{StaticResource LabelStyle}" Margin="0,0,10,0"/>
-            <ComboBox x:Name="SensorComboBox"
-                      ItemsSource="{Binding SensorList}"
-                      SelectedItem="{Binding SelectedSensor}"
-                      DisplayMemberPath="Name"
-                      Width="180"/>
-            <Button Content="Refresh"
-                    Command="{Binding RefreshGraphCommand}"
-                    Style="{StaticResource ActionButtonStyle}"
-                    Margin="10,0,0,0"
-                    ToolTip="Manually refresh the graph"/>
-        </StackPanel>
+        <Border Grid.Row="0" Background="{StaticResource PanelBrush}"
+                BorderThickness="3,1,1,1" Margin="0,0,0,10" CornerRadius="4" Padding="12">
+            <Border.BorderBrush>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Color="{StaticResource AccentColor}" Offset="0"/>
+                    <GradientStop Color="{StaticResource AccentColor}" Offset="0.01"/>
+                    <GradientStop Color="{StaticResource BorderColor}" Offset="0.01"/>
+                </LinearGradientBrush>
+            </Border.BorderBrush>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Sensor:" Style="{StaticResource LabelStyle}" Margin="0,0,10,0"/>
+                <ComboBox x:Name="SensorComboBox"
+                          ItemsSource="{Binding SensorList}"
+                          SelectedItem="{Binding SelectedSensor}"
+                          DisplayMemberPath="Name"
+                          Width="200"/>
+                <Button Content="Refresh"
+                        Command="{Binding RefreshGraphCommand}"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Margin="10,0,0,0"
+                        ToolTip="Manually refresh the graph"/>
+            </StackPanel>
+        </Border>
 
         <Border Grid.Row="1"
                 Background="{StaticResource PanelBrush}"

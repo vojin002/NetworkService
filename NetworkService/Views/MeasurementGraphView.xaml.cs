@@ -40,24 +40,37 @@ namespace NetworkService.Views
         {
             GraphCanvas.Children.Clear();
 
+            double canvasWidth = GraphCanvas.ActualWidth;
+            double canvasHeight = GraphCanvas.ActualHeight;
+
             if (vm == null || vm.GraphPoints == null || vm.GraphPoints.Count == 0)
             {
                 var noDataText = new TextBlock
                 {
-                    Text = "No data — select a sensor and wait for measurements",
-                    Foreground = new SolidColorBrush(Color.FromRgb(150, 150, 150)),
-                    FontSize = 14
+                    Text = "No data",
+                    Foreground = new SolidColorBrush(Color.FromRgb(180, 190, 210)),
+                    FontSize = 22,
+                    FontWeight = FontWeights.SemiBold
                 };
-                Canvas.SetLeft(noDataText, 20);
-                Canvas.SetTop(noDataText, 20);
+                noDataText.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                Canvas.SetLeft(noDataText, (canvasWidth - noDataText.DesiredSize.Width) / 2);
+                Canvas.SetTop(noDataText, canvasHeight / 2 - 30);
                 GraphCanvas.Children.Add(noDataText);
+
+                var subText = new TextBlock
+                {
+                    Text = "Select a sensor and wait for measurements",
+                    Foreground = new SolidColorBrush(Color.FromRgb(180, 190, 210)),
+                    FontSize = 13
+                };
+                subText.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                Canvas.SetLeft(subText, (canvasWidth - subText.DesiredSize.Width) / 2);
+                Canvas.SetTop(subText, canvasHeight / 2 + 5);
+                GraphCanvas.Children.Add(subText);
                 return;
             }
 
             List<MeasurementPoint> points = vm.GraphPoints;
-
-            double canvasWidth = GraphCanvas.ActualWidth;
-            double canvasHeight = GraphCanvas.ActualHeight;
 
             if (canvasWidth < 10 || canvasHeight < 10) return;
 
