@@ -130,20 +130,20 @@ namespace NetworkService.ViewModel
             listeningThread.Start();
         }
 
-        private void UpdateSensorValue(string sensorName, double value)
+        private void UpdateSensorValue(string entitetName, double value)
         {
             if (NetworkEntitiesViewModel.AllSensors == null) return;
 
-            foreach (var sensor in NetworkEntitiesViewModel.AllSensors)
-            {
-                if (sensor.Name == sensorName)
-                {
-                    sensor.LastMeasuredValue = value;
-                    sensor.OnPropertyChanged("IsValueValid");
-                    WriteToLog(sensor.Name, value);
-                    break;
-                }
-            }
+            string indexStr = entitetName.Replace("Entitet_", "").Trim();
+            int index;
+            if (!int.TryParse(indexStr, out index)) return;
+
+            if (index < 0 || index >= NetworkEntitiesViewModel.AllSensors.Count) return;
+
+            var sensor = NetworkEntitiesViewModel.AllSensors[index];
+            sensor.LastMeasuredValue = value;
+            sensor.OnPropertyChanged("IsValueValid");
+            WriteToLog(sensor.Name, value);
         }
 
         private void WriteToLog(string sensorName, double value)

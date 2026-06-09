@@ -81,8 +81,8 @@ namespace NetworkService.Views
             int count = points.Count;
             double spacing = (canvasWidth - 2 * circleRadius) / (count > 1 ? count - 1 : 1);
 
-            double maxVal = 400;
-            double minVal = 200;
+            double maxVal = 450;
+            double minVal = 150;
 
             var centerPoints = new List<Point>();
 
@@ -90,6 +90,8 @@ namespace NetworkService.Views
             {
                 double x = circleRadius + i * spacing;
                 double normalizedY = (points[i].Value - minVal) / (maxVal - minVal);
+                if (normalizedY < 0) normalizedY = 0;
+                if (normalizedY > 1) normalizedY = 1;
                 double y = xAxisY - topMargin - normalizedY * (xAxisY - topMargin - circleRadius);
 
                 centerPoints.Add(new Point(x, y));
