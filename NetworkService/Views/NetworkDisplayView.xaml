@@ -35,25 +35,51 @@
                            Margin="8,8,8,4" FontSize="13"/>
                 <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Margin="8,0,8,4"/>
                 <TreeView x:Name="SensorTreeView"
-                          ItemsSource="{Binding SensorsInTreeView}"
+                          ItemsSource="{Binding SensorGroups}"
                           Background="Transparent"
                           Foreground="{StaticResource TextBrush}"
                           BorderThickness="0"
                           PreviewMouseLeftButtonDown="TreeView_PreviewMouseLeftButtonDown">
+                    <TreeView.Resources>
+                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#E3F2FD"/>
+                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#1A202C"/>
+                        <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#E3F2FD"/>
+                        <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="#1A202C"/>
+                    </TreeView.Resources>
                     <TreeView.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal" Margin="0,2">
-                                <Ellipse Width="7" Height="7"
-                                         Fill="{StaticResource AccentBrush}"
-                                         VerticalAlignment="Center"
-                                         Margin="0,0,6,0"/>
-                                <TextBlock Text="{Binding Name}"
-                                           Foreground="{StaticResource TextBrush}"
-                                           FontSize="12"
-                                           VerticalAlignment="Center"
-                                           ToolTip="Drag to place on the grid"/>
-                            </StackPanel>
-                        </DataTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Sensors}">
+                            <TextBlock Text="{Binding TypeName}"
+                                       Foreground="{StaticResource AccentBrush}"
+                                       FontWeight="Bold"
+                                       FontSize="12"/>
+                            <HierarchicalDataTemplate.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Margin="0,2">
+                                        <Ellipse Width="7" Height="7"
+                                                 VerticalAlignment="Center"
+                                                 Margin="0,0,5,0">
+                                            <Ellipse.Style>
+                                                <Style TargetType="Ellipse">
+                                                    <Setter Property="Fill" Value="{StaticResource AccentBrush}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsValueValid}" Value="False">
+                                                            <Setter Property="Fill" Value="{StaticResource DangerBrush}"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Ellipse.Style>
+                                        </Ellipse>
+                                        <Image Source="{Binding Type.ImagePath}" Width="16" Height="16"
+                                               Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding Name}"
+                                                   Foreground="{StaticResource TextBrush}"
+                                                   FontSize="12"
+                                                   VerticalAlignment="Center"
+                                                   ToolTip="Drag to place on the grid"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </HierarchicalDataTemplate.ItemTemplate>
+                        </HierarchicalDataTemplate>
                     </TreeView.ItemTemplate>
                 </TreeView>
             </StackPanel>

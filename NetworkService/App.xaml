@@ -5,7 +5,7 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
 
-        <Color x:Key="BackgroundColorDark">#F0F4F8</Color>
+        <Color x:Key="BackgroundColorDark">#F8FAFC</Color>
         <Color x:Key="PanelColor">#FFFFFF</Color>
         <Color x:Key="AccentColor">#0078D4</Color>
         <Color x:Key="DangerColor">#D32F2F</Color>
@@ -116,7 +116,7 @@
         </Style>
 
         <Style x:Key="InputStyle" TargetType="TextBox">
-            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Background" Value="White"/>
             <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
@@ -145,7 +145,7 @@
         </Style>
 
         <Style TargetType="ComboBox">
-            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Background" Value="White"/>
             <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
@@ -155,7 +155,7 @@
         </Style>
 
         <Style TargetType="ComboBoxItem">
-            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Background" Value="White"/>
             <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
             <Setter Property="Padding" Value="8,5"/>
             <Style.Triggers>
@@ -171,16 +171,36 @@
 
         <Style TargetType="TreeViewItem">
             <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
-            <Setter Property="Padding" Value="4,3"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{StaticResource BorderBrush}"/>
-                </Trigger>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="{StaticResource BorderBrush}"/>
-                </Trigger>
-            </Style.Triggers>
+            <Setter Property="IsExpanded" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TreeViewItem">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Border x:Name="Bd" Grid.Row="0" Padding="4,3"
+                                    Background="Transparent" CornerRadius="3">
+                                <ContentPresenter ContentSource="Header"/>
+                            </Border>
+                            <ItemsPresenter x:Name="ItemsHost" Grid.Row="1" Margin="16,0,0,0"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsExpanded" Value="False">
+                                <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#E3F2FD"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#BBDEFB"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <Style TargetType="RadioButton">

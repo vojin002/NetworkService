@@ -105,7 +105,7 @@ namespace NetworkService.Views
                     Y1 = centerPoints[i].Y,
                     X2 = centerPoints[i + 1].X,
                     Y2 = centerPoints[i + 1].Y,
-                    Stroke = new SolidColorBrush(Color.FromRgb(80, 80, 80)),
+                    Stroke = new SolidColorBrush(Color.FromRgb(0, 120, 212)),
                     StrokeThickness = 2
                 };
                 GraphCanvas.Children.Add(line);

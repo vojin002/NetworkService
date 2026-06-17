@@ -1,5 +1,6 @@
 using NetworkService.Model;
 using NetworkService.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,6 +19,10 @@ namespace NetworkService.Views
         private Border firstConnectBorder = null;
 
         private List<Border[]> connections = new List<Border[]>();
+        private Dictionary<TemperatureSensor, System.ComponentModel.PropertyChangedEventHandler> sensorHandlers
+            = new Dictionary<TemperatureSensor, System.ComponentModel.PropertyChangedEventHandler>();
+        private Dictionary<TemperatureSensor, Border> sensorSlotMap
+            = new Dictionary<TemperatureSensor, Border>();
 
         public NetworkDisplayView()
         {
@@ -28,6 +33,15 @@ namespace NetworkService.Views
         private void NetworkDisplayView_Loaded(object sender, RoutedEventArgs e)
         {
             CreateSlots();
+            if (NetworkEntitiesViewModel.AllSensors != null)
+                NetworkEntitiesViewModel.AllSensors.CollectionChanged += OnAllSensorsChanged;
+        }
+
+        private void OnAllSensorsChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.OldItems == null) return;
+            foreach (TemperatureSensor sensor in e.OldItems)
+                RemoveSensorFromGrid(sensor);
         }
 
         private void CreateSlots()
@@ -62,9 +76,29 @@ namespace NetworkService.Views
             }
         }
 
+        private TreeViewItem FindTreeViewItem(DependencyObject source)
+        {
+            while (source != null && !(source is TreeViewItem))
+                source = VisualTreeHelper.GetParent(source);
+            return source as TreeViewItem;
+        }
+
         private void TreeView_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            var sensor = (e.OriginalSource as FrameworkElement)?.DataContext as TemperatureSensor;
+            var element = e.OriginalSource as FrameworkElement;
+
+            if (element?.DataContext is NetworkService.Model.SensorTypeGroup)
+            {
+                var treeViewItem = FindTreeViewItem(element);
+                if (treeViewItem != null)
+                {
+                    treeViewItem.IsExpanded = !treeViewItem.IsExpanded;
+                    e.Handled = true;
+                    return;
+                }
+            }
+
+            var sensor = element?.DataContext as TemperatureSensor;
             if (sensor == null) return;
 
             draggedSensor = sensor;
@@ -137,10 +171,9 @@ namespace NetworkService.Views
         private void ResetSlotBorder(Border slot)
         {
             var sensor = slot.Tag as TemperatureSensor;
-            if (sensor != null && !sensor.IsValueValid)
+            if (sensor != null)
             {
-                slot.BorderBrush = new SolidColorBrush(Color.FromRgb(211, 47, 47));
-                slot.BorderThickness = new Thickness(2);
+                UpdateSlotBorder(slot, sensor);
             }
             else
             {
@@ -184,10 +217,16 @@ namespace NetworkService.Views
             else
             {
                 if (vm != null)
+                {
                     vm.SensorsInTreeView.Remove(draggedSensor);
+                    vm.RemoveFromGroup(draggedSensor);
+                }
 
                 if (existingSensor != null && vm != null)
+                {
                     vm.SensorsInTreeView.Add(existingSensor);
+                    vm.AddToGroup(existingSensor);
+                }
             }
 
             SetSlotContent(targetSlot, draggedSensor);
@@ -200,7 +239,39 @@ namespace NetworkService.Views
 
         private void SetSlotContent(Border slot, TemperatureSensor sensor)
         {
+            var currentSensor = slot.Tag as TemperatureSensor;
+            if (currentSensor != null && currentSensor != sensor && sensorHandlers.ContainsKey(currentSensor))
+            {
+                Border registeredSlot;
+                if (!sensorSlotMap.TryGetValue(currentSensor, out registeredSlot) || registeredSlot == slot)
+                {
+                    currentSensor.PropertyChanged -= sensorHandlers[currentSensor];
+                    sensorHandlers.Remove(currentSensor);
+                    sensorSlotMap.Remove(currentSensor);
+                }
+            }
+
             var panel = new StackPanel { Margin = new Thickness(4) };
+
+            var headerRow = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 0, 2) };
+
+            if (sensor.Type != null && !string.IsNullOrEmpty(sensor.Type.ImagePath))
+            {
+                var typeImg = new System.Windows.Controls.Image
+                {
+                    Width = 18,
+                    Height = 18,
+                    Margin = new Thickness(0, 0, 4, 0),
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+                try
+                {
+                    typeImg.Source = new System.Windows.Media.Imaging.BitmapImage(
+                        new Uri(sensor.Type.ImagePath, UriKind.Absolute));
+                }
+                catch { }
+                headerRow.Children.Add(typeImg);
+            }
 
             var nameText = new TextBlock
             {
@@ -208,8 +279,11 @@ namespace NetworkService.Views
                 Foreground = new SolidColorBrush(Color.FromRgb(0, 120, 212)),
                 FontWeight = FontWeights.Bold,
                 FontSize = 11,
-                TextWrapping = TextWrapping.Wrap
+                TextWrapping = TextWrapping.Wrap,
+                VerticalAlignment = VerticalAlignment.Center
             };
+            headerRow.Children.Add(nameText);
+            panel.Children.Add(headerRow);
 
             var idText = new TextBlock
             {
@@ -242,7 +316,6 @@ namespace NetworkService.Views
                 Converter = new BoolToColorConverter()
             });
 
-            panel.Children.Add(nameText);
             panel.Children.Add(idText);
             panel.Children.Add(valueText);
             panel.Children.Add(statusText);
@@ -250,23 +323,48 @@ namespace NetworkService.Views
             slot.Child = panel;
             slot.Tag = sensor;
 
+            UpdateSlotBorder(slot, sensor);
+
+            if (sensorHandlers.ContainsKey(sensor))
+            {
+                sensor.PropertyChanged -= sensorHandlers[sensor];
+                sensorHandlers.Remove(sensor);
+                sensorSlotMap.Remove(sensor);
+            }
+
+            System.ComponentModel.PropertyChangedEventHandler handler = (s, args) =>
+            {
+                if (args.PropertyName == "LastMeasuredValue" || args.PropertyName == "IsValueValid")
+                    UpdateSlotBorder(slot, sensor);
+            };
+            sensor.PropertyChanged += handler;
+            sensorHandlers[sensor] = handler;
+            sensorSlotMap[sensor] = slot;
+        }
+
+        private void UpdateSlotBorder(Border slot, TemperatureSensor sensor)
+        {
             if (!sensor.IsValueValid)
-            {
-                slot.BorderBrush = new SolidColorBrush(Color.FromRgb(255, 68, 68));
-                slot.BorderThickness = new Thickness(2);
-            }
+                slot.BorderBrush = new SolidColorBrush(Color.FromRgb(211, 47, 47));
             else
-            {
-                slot.BorderBrush = new SolidColorBrush(Color.FromRgb(203, 213, 224));
-                slot.BorderThickness = new Thickness(1);
-            }
+                slot.BorderBrush = new SolidColorBrush(Color.FromRgb(0, 120, 212));
+
+            slot.BorderThickness = new Thickness(3, 1, 1, 1);
         }
 
         private void ClearSlot(Border slot)
         {
+            var oldSensor = slot.Tag as TemperatureSensor;
+            if (oldSensor != null && sensorHandlers.ContainsKey(oldSensor))
+            {
+                oldSensor.PropertyChanged -= sensorHandlers[oldSensor];
+                sensorHandlers.Remove(oldSensor);
+                sensorSlotMap.Remove(oldSensor);
+            }
             slot.Tag = null;
             slot.BorderBrush = new SolidColorBrush(Color.FromRgb(203, 213, 224));
             slot.BorderThickness = new Thickness(1);
+            slot.Background = new SolidColorBrush(Color.FromRgb(240, 244, 248));
             slot.Child = new TextBlock
             {
                 Text = "+",
@@ -292,6 +390,7 @@ namespace NetworkService.Views
                 var sensor = toPlace[0];
                 toPlace.RemoveAt(0);
                 vm.SensorsInTreeView.Remove(sensor);
+                vm.RemoveFromGroup(sensor);
                 SetSlotContent(slot, sensor);
             }
 
@@ -340,11 +439,23 @@ namespace NetworkService.Views
             {
                 if (slot.Tag == sensor)
                 {
+                    if (firstConnectBorder == slot)
+                    {
+                        firstConnectBorder = null;
+                        connectMode = false;
+                        ConnectBtn.Content = "Connect Sensors";
+                        ConnectBtn.Style = (Style)FindResource("NavButtonStyle");
+                    }
                     RemoveConnectionsForSlot(slot);
                     ClearSlot(slot);
                     var vm = DataContext as NetworkDisplayViewModel;
-                    if (vm != null)
+                    bool sensorStillExists = NetworkEntitiesViewModel.AllSensors != null &&
+                                            NetworkEntitiesViewModel.AllSensors.Contains(sensor);
+                    if (vm != null && sensorStillExists)
+                    {
                         vm.SensorsInTreeView.Add(sensor);
+                        vm.AddToGroup(sensor);
+                    }
                     break;
                 }
             }

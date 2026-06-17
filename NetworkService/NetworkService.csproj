@@ -88,6 +88,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Model\SensorType.cs" />
+    <Compile Include="Model\SensorTypeGroup.cs" />
     <Compile Include="Model\TemperatureSensor.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\NetworkEntitiesViewModel.cs" />
@@ -141,6 +142,10 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\rtd.png" />
+    <Resource Include="Resources\termosprega.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

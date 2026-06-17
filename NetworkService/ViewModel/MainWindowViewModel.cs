@@ -66,7 +66,6 @@ namespace NetworkService.ViewModel
                     CurrentViewModel = networkEntitiesViewModel;
                     break;
                 case "graph":
-                    measurementGraphViewModel.LoadSensors();
                     CurrentViewModel = measurementGraphViewModel;
                     break;
             }

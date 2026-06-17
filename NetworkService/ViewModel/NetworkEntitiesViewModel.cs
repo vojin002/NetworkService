@@ -49,8 +49,8 @@ namespace NetworkService.ViewModel
             SearchByName = true;
 
             availableTypes = new ObservableCollection<SensorType>();
-            availableTypes.Add(new SensorType { Name = "RTD", ImagePath = "Resources/rtd.png" });
-            availableTypes.Add(new SensorType { Name = "TermoSprega", ImagePath = "Resources/termosprega.png" });
+            availableTypes.Add(new SensorType { Name = "RTD", ImagePath = "pack://application:,,,/NetworkService;component/Resources/rtd.png" });
+            availableTypes.Add(new SensorType { Name = "TermoSprega", ImagePath = "pack://application:,,,/NetworkService;component/Resources/termosprega.png" });
 
             SelectedTypeToAdd = availableTypes[0];
 
@@ -69,8 +69,8 @@ namespace NetworkService.ViewModel
 
         private void LoadInitialSensors()
         {
-            var rtd = new SensorType { Name = "RTD", ImagePath = "Resources/rtd.png" };
-            var termo = new SensorType { Name = "TermoSprega", ImagePath = "Resources/termosprega.png" };
+            var rtd = new SensorType { Name = "RTD", ImagePath = "pack://application:,,,/NetworkService;component/Resources/rtd.png" };
+            var termo = new SensorType { Name = "TermoSprega", ImagePath = "pack://application:,,,/NetworkService;component/Resources/termosprega.png" };
 
             AllSensors.Add(new TemperatureSensor { Id = 1, Name = "Reactor_1", Type = rtd });
             AllSensors.Add(new TemperatureSensor { Id = 2, Name = "Reactor_2", Type = termo });
@@ -258,7 +258,7 @@ namespace NetworkService.ViewModel
             if (string.IsNullOrEmpty(SearchText)) return;
 
             string searchOption = SearchByName ? "Name" : "Type";
-            string searchEntry = searchOption + ":" + SearchText;
+            string searchEntry = searchOption + ": " + SearchText;
 
             if (!SavedSearches.Contains(searchEntry))
                 SavedSearches.Add(searchEntry);
@@ -272,11 +272,17 @@ namespace NetworkService.ViewModel
             if (parts.Length != 2) return;
 
             if (parts[0] == "Name")
+            {
                 SearchByName = true;
+                SearchByType = false;
+            }
             else
+            {
                 SearchByType = true;
+                SearchByName = false;
+            }
 
-            SearchText = parts[1];
+            SearchText = parts[1].Trim();
             OnSearch();
         }
 

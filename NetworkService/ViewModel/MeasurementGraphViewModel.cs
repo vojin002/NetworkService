@@ -3,6 +3,7 @@ using NetworkService.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.IO;
 using System.Windows.Threading;
 
@@ -30,6 +31,30 @@ namespace NetworkService.ViewModel
             refreshTimer.Start();
 
             LoadSensors();
+
+            if (NetworkEntitiesViewModel.AllSensors != null)
+                NetworkEntitiesViewModel.AllSensors.CollectionChanged += AllSensors_CollectionChanged;
+        }
+
+        private void AllSensors_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (TemperatureSensor sensor in e.NewItems)
+                    SensorList.Add(sensor);
+            }
+            if (e.OldItems != null)
+            {
+                foreach (TemperatureSensor sensor in e.OldItems)
+                {
+                    SensorList.Remove(sensor);
+                    if (SelectedSensor == sensor)
+                    {
+                        SelectedSensor = null;
+                        GraphPoints = new List<MeasurementPoint>();
+                    }
+                }
+            }
         }
 
         public ObservableCollection<TemperatureSensor> SensorList
@@ -82,7 +107,7 @@ namespace NetworkService.ViewModel
 
             foreach (var line in lines)
             {
-                if (line.Contains(sensorName))
+                if (line.Contains("| " + sensorName + " |"))
                     matching.Add(line);
             }
 
