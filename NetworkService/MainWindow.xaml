@@ -48,9 +48,6 @@
                 Background="{StaticResource PanelBrush}"
                 BorderBrush="{StaticResource BorderBrush}"
                 BorderThickness="0,0,0,1">
-            <Border.Effect>
-                <DropShadowEffect Color="#CBD5E0" BlurRadius="6" ShadowDepth="2" Direction="270" Opacity="0.5"/>
-            </Border.Effect>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="480"/>

@@ -17,9 +17,6 @@
         <Border Grid.Row="0" Background="{StaticResource PanelBrush}"
                 BorderThickness="3,1,1,1"
                 Padding="12" Margin="0,0,0,10" CornerRadius="4">
-            <Border.Effect>
-                <DropShadowEffect Color="#CBD5E0" BlurRadius="4" ShadowDepth="1" Direction="270" Opacity="0.4"/>
-            </Border.Effect>
             <Border.BorderBrush>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                     <GradientStop Color="{StaticResource AccentColor}" Offset="0"/>
@@ -57,9 +54,6 @@
         <Border Grid.Row="1" Background="{StaticResource PanelBrush}"
                 BorderThickness="3,1,1,1"
                 Padding="12" Margin="0,0,0,10" CornerRadius="4">
-            <Border.Effect>
-                <DropShadowEffect Color="#CBD5E0" BlurRadius="4" ShadowDepth="1" Direction="270" Opacity="0.4"/>
-            </Border.Effect>
             <Border.BorderBrush>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                     <GradientStop Color="{StaticResource AccentColor}" Offset="0"/>
