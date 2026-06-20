@@ -84,6 +84,7 @@ namespace NetworkService.Views
             double maxVal = 450;
             double minVal = 150;
 
+
             var centerPoints = new List<Point>();
 
             for (int i = 0; i < count; i++)
@@ -99,6 +100,22 @@ namespace NetworkService.Views
 
             for (int i = 0; i < centerPoints.Count - 1; i++)
             {
+                double midX = (centerPoints[i].X + centerPoints[i + 1].X) / 2;
+                var vLine = new Line
+                {
+                    X1 = midX,
+                    Y1 = topMargin,
+                    X2 = midX,
+                    Y2 = xAxisY,
+                    Stroke = new SolidColorBrush(Color.FromArgb(70, 150, 160, 175)),
+                    StrokeThickness = 1,
+                    StrokeDashArray = new DoubleCollection { 4, 3 }
+                };
+                GraphCanvas.Children.Add(vLine);
+            }
+
+            for (int i = 0; i < centerPoints.Count - 1; i++)
+            {
                 var line = new Line
                 {
                     X1 = centerPoints[i].X,
@@ -106,7 +123,7 @@ namespace NetworkService.Views
                     X2 = centerPoints[i + 1].X,
                     Y2 = centerPoints[i + 1].Y,
                     Stroke = new SolidColorBrush(Color.FromRgb(0, 120, 212)),
-                    StrokeThickness = 2
+                    StrokeThickness = 2.5
                 };
                 GraphCanvas.Children.Add(line);
             }
@@ -115,8 +132,8 @@ namespace NetworkService.Views
             {
                 bool isValid = points[i].IsValid;
                 var fillColor = isValid
-                    ? Color.FromRgb(0, 212, 170)
-                    : Color.FromRgb(255, 68, 68);
+                    ? Color.FromRgb(0, 184, 148)
+                    : Color.FromRgb(230, 57, 70);
 
                 var circle = new Ellipse
                 {
@@ -124,7 +141,7 @@ namespace NetworkService.Views
                     Height = circleRadius * 2,
                     Fill = new SolidColorBrush(fillColor),
                     Stroke = new SolidColorBrush(Colors.White),
-                    StrokeThickness = 1.5
+                    StrokeThickness = 2.5
                 };
 
                 Canvas.SetLeft(circle, centerPoints[i].X - circleRadius);
@@ -135,15 +152,24 @@ namespace NetworkService.Views
                 {
                     Text = points[i].Value.ToString("F0"),
                     Foreground = new SolidColorBrush(Colors.White),
-                    FontSize = 11,
+                    FontSize = 10,
                     FontWeight = FontWeights.Bold,
                     TextAlignment = TextAlignment.Center,
-                    Width = circleRadius * 2
+                    TextTrimming = TextTrimming.CharacterEllipsis,
+                    Width = circleRadius * 2 - 6
                 };
 
-                Canvas.SetLeft(valueText, centerPoints[i].X - circleRadius);
-                Canvas.SetTop(valueText, centerPoints[i].Y - 8);
-                GraphCanvas.Children.Add(valueText);
+                var valueContainer = new Border
+                {
+                    Width = circleRadius * 2,
+                    Height = 16,
+                    ClipToBounds = true
+                };
+                valueContainer.Child = valueText;
+
+                Canvas.SetLeft(valueContainer, centerPoints[i].X - circleRadius);
+                Canvas.SetTop(valueContainer, centerPoints[i].Y - 8);
+                GraphCanvas.Children.Add(valueContainer);
 
                 string timeLabel = points[i].Timestamp;
                 if (timeLabel.Length > 8)
@@ -152,7 +178,7 @@ namespace NetworkService.Views
                 var timeText = new TextBlock
                 {
                     Text = timeLabel,
-                    Foreground = new SolidColorBrush(Color.FromRgb(180, 180, 180)),
+                    Foreground = new SolidColorBrush(Color.FromRgb(150, 160, 170)),
                     FontSize = 10,
                     TextAlignment = TextAlignment.Center,
                     Width = 80
@@ -169,47 +195,47 @@ namespace NetworkService.Views
                 Y1 = xAxisY,
                 X2 = canvasWidth,
                 Y2 = xAxisY,
-                Stroke = new SolidColorBrush(Color.FromRgb(80, 80, 80)),
-                StrokeThickness = 1
+                Stroke = new SolidColorBrush(Color.FromRgb(100, 110, 120)),
+                StrokeThickness = 1.5
             };
             GraphCanvas.Children.Add(xAxis);
 
             var legendValid = new Ellipse
             {
                 Width = 12, Height = 12,
-                Fill = new SolidColorBrush(Color.FromRgb(0, 212, 170))
+                Fill = new SolidColorBrush(Color.FromRgb(0, 184, 148))
             };
-            Canvas.SetLeft(legendValid, canvasWidth - 160);
-            Canvas.SetTop(legendValid, 5);
+            Canvas.SetLeft(legendValid, canvasWidth - 165);
+            Canvas.SetTop(legendValid, 8);
             GraphCanvas.Children.Add(legendValid);
 
             var legendValidText = new TextBlock
             {
-                Text = "Valid (250-350°C)",
-                Foreground = new SolidColorBrush(Color.FromRgb(180, 180, 180)),
+                Text = "Valid (250–350°C)",
+                Foreground = new SolidColorBrush(Color.FromRgb(150, 160, 170)),
                 FontSize = 11
             };
-            Canvas.SetLeft(legendValidText, canvasWidth - 143);
-            Canvas.SetTop(legendValidText, 3);
+            Canvas.SetLeft(legendValidText, canvasWidth - 148);
+            Canvas.SetTop(legendValidText, 6);
             GraphCanvas.Children.Add(legendValidText);
 
             var legendInvalid = new Ellipse
             {
                 Width = 12, Height = 12,
-                Fill = new SolidColorBrush(Color.FromRgb(255, 68, 68))
+                Fill = new SolidColorBrush(Color.FromRgb(230, 57, 70))
             };
-            Canvas.SetLeft(legendInvalid, canvasWidth - 160);
-            Canvas.SetTop(legendInvalid, 22);
+            Canvas.SetLeft(legendInvalid, canvasWidth - 165);
+            Canvas.SetTop(legendInvalid, 26);
             GraphCanvas.Children.Add(legendInvalid);
 
             var legendInvalidText = new TextBlock
             {
                 Text = "Out of range",
-                Foreground = new SolidColorBrush(Color.FromRgb(180, 180, 180)),
+                Foreground = new SolidColorBrush(Color.FromRgb(150, 160, 170)),
                 FontSize = 11
             };
-            Canvas.SetLeft(legendInvalidText, canvasWidth - 143);
-            Canvas.SetTop(legendInvalidText, 20);
+            Canvas.SetLeft(legendInvalidText, canvasWidth - 148);
+            Canvas.SetTop(legendInvalidText, 24);
             GraphCanvas.Children.Add(legendInvalidText);
         }
     }

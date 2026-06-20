@@ -32,7 +32,8 @@
                 BorderThickness="1" Margin="0,0,8,0" CornerRadius="4">
             <StackPanel>
                 <TextBlock Text="Sensors" Style="{StaticResource SectionHeaderStyle}"
-                           Margin="8,8,8,4" FontSize="13"/>
+                           Margin="8,8,8,4" FontSize="13"
+                           TextAlignment="Center"/>
                 <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Margin="8,0,8,4"/>
                 <TreeView x:Name="SensorTreeView"
                           ItemsSource="{Binding SensorGroups}"

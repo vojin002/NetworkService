@@ -293,7 +293,7 @@ namespace NetworkService.ViewModel
                 p.Kill();
 
             string simulatorPath = System.IO.Path.Combine(
-                System.AppDomain.CurrentDomain.BaseDirectory, "..\\..\\..\\..\\MeteringSimulator\\MeteringSimulator\\bin\\Debug\\MeteringSimulator.exe");
+                System.AppDomain.CurrentDomain.BaseDirectory, "..\\..\\..\\..\\..\\MeteringSimulator\\MeteringSimulator\\bin\\Debug\\MeteringSimulator.exe");
 
             if (System.IO.File.Exists(simulatorPath))
                 System.Diagnostics.Process.Start(simulatorPath);

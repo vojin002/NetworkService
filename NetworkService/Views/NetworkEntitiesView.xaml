@@ -89,7 +89,33 @@
                     <ComboBox ItemsSource="{Binding SavedSearches}"
                               SelectedItem="{Binding SelectedSavedSearch}"
                               Width="200"
-                              ToolTip="Select a saved search to apply it"/>
+                              ToolTip="Select a saved search to apply it">
+                        <ComboBox.Style>
+                            <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SavedSearches.Count}" Value="0">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ComboBox.Style>
+                    </ComboBox>
+                    <TextBlock Text="No saved searches yet"
+                               FontStyle="Italic"
+                               Foreground="{StaticResource BorderBrush}"
+                               VerticalAlignment="Center"
+                               FontSize="12">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SavedSearches.Count}" Value="0">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
                 </StackPanel>
             </StackPanel>
         </Border>

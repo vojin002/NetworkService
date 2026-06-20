@@ -18,7 +18,7 @@ namespace NetworkService.Views
         private bool connectMode = false;
         private Border firstConnectBorder = null;
 
-        private List<Border[]> connections = new List<Border[]>();
+        private List<TemperatureSensor[]> connections = new List<TemperatureSensor[]>();
         private Dictionary<TemperatureSensor, System.ComponentModel.PropertyChangedEventHandler> sensorHandlers
             = new Dictionary<TemperatureSensor, System.ComponentModel.PropertyChangedEventHandler>();
         private Dictionary<TemperatureSensor, Border> sensorSlotMap
@@ -52,18 +52,19 @@ namespace NetworkService.Views
                 var slot = new Border
                 {
                     Margin = new Thickness(4),
-                    BorderBrush = new SolidColorBrush(Color.FromRgb(203, 213, 224)),
+                    BorderBrush = new SolidColorBrush(Color.FromRgb(218, 226, 236)),
                     BorderThickness = new Thickness(1),
-                    Background = new SolidColorBrush(Color.FromRgb(240, 244, 248)),
-                    CornerRadius = new CornerRadius(4),
+                    Background = new SolidColorBrush(Color.FromRgb(248, 250, 252)),
+                    CornerRadius = new CornerRadius(6),
                     AllowDrop = true,
                     Tag = null,
                     Cursor = Cursors.Hand,
                     Child = new TextBlock
                     {
                         Text = "+",
-                        FontSize = 18,
-                        Foreground = new SolidColorBrush(Color.FromRgb(200, 210, 220)),
+                        FontSize = 22,
+                        FontWeight = FontWeights.Light,
+                        Foreground = new SolidColorBrush(Color.FromRgb(195, 210, 225)),
                         HorizontalAlignment = HorizontalAlignment.Center,
                         VerticalAlignment = VerticalAlignment.Center
                     }
@@ -144,11 +145,14 @@ namespace NetworkService.Views
                     return;
                 }
 
+                var sensorA = firstConnectBorder.Tag as TemperatureSensor;
+                var sensorB = slot.Tag as TemperatureSensor;
+
                 bool alreadyConnected = false;
                 foreach (var conn in connections)
                 {
-                    if ((conn[0] == firstConnectBorder && conn[1] == slot) ||
-                        (conn[0] == slot && conn[1] == firstConnectBorder))
+                    if ((conn[0] == sensorA && conn[1] == sensorB) ||
+                        (conn[0] == sensorB && conn[1] == sensorA))
                     {
                         alreadyConnected = true;
                         break;
@@ -156,7 +160,7 @@ namespace NetworkService.Views
                 }
 
                 if (!alreadyConnected)
-                    connections.Add(new Border[] { firstConnectBorder, slot });
+                    connections.Add(new TemperatureSensor[] { sensorA, sensorB });
 
                 ResetSlotBorder(firstConnectBorder);
                 firstConnectBorder = null;
@@ -177,7 +181,7 @@ namespace NetworkService.Views
             }
             else
             {
-                slot.BorderBrush = new SolidColorBrush(Color.FromRgb(203, 213, 224));
+                slot.BorderBrush = new SolidColorBrush(Color.FromRgb(218, 226, 236));
                 slot.BorderThickness = new Thickness(1);
             }
         }
@@ -224,6 +228,7 @@ namespace NetworkService.Views
 
                 if (existingSensor != null && vm != null)
                 {
+                    RemoveConnectionsForSensor(existingSensor);
                     vm.SensorsInTreeView.Add(existingSensor);
                     vm.AddToGroup(existingSensor);
                 }
@@ -288,14 +293,18 @@ namespace NetworkService.Views
             var idText = new TextBlock
             {
                 Text = "ID: " + sensor.Id,
-                Foreground = new SolidColorBrush(Color.FromRgb(80, 80, 80)),
-                FontSize = 10
+                Foreground = new SolidColorBrush(Color.FromRgb(100, 110, 120)),
+                FontSize = 10,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                TextAlignment = TextAlignment.Center
             };
 
             var valueText = new TextBlock
             {
                 FontSize = 10,
-                Foreground = new SolidColorBrush(Color.FromRgb(80, 80, 80))
+                Foreground = new SolidColorBrush(Color.FromRgb(80, 80, 80)),
+                HorizontalAlignment = HorizontalAlignment.Center,
+                TextAlignment = TextAlignment.Center
             };
             var valueBinding = new System.Windows.Data.Binding("LastMeasuredValue")
             {
@@ -304,7 +313,7 @@ namespace NetworkService.Views
             };
             valueText.SetBinding(TextBlock.TextProperty, valueBinding);
 
-            var statusText = new TextBlock { FontSize = 10, FontWeight = FontWeights.Bold };
+            var statusText = new TextBlock { FontSize = 10, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, TextAlignment = TextAlignment.Center };
             statusText.SetBinding(TextBlock.TextProperty, new System.Windows.Data.Binding("IsValueValid")
             {
                 Source = sensor,
@@ -322,6 +331,7 @@ namespace NetworkService.Views
 
             slot.Child = panel;
             slot.Tag = sensor;
+            slot.Background = new SolidColorBrush(Colors.White);
 
             UpdateSlotBorder(slot, sensor);
 
@@ -362,14 +372,16 @@ namespace NetworkService.Views
                 sensorSlotMap.Remove(oldSensor);
             }
             slot.Tag = null;
-            slot.BorderBrush = new SolidColorBrush(Color.FromRgb(203, 213, 224));
+            slot.BorderBrush = new SolidColorBrush(Color.FromRgb(218, 226, 236));
             slot.BorderThickness = new Thickness(1);
-            slot.Background = new SolidColorBrush(Color.FromRgb(240, 244, 248));
+            slot.Background = new SolidColorBrush(Color.FromRgb(248, 250, 252));
+            slot.CornerRadius = new CornerRadius(6);
             slot.Child = new TextBlock
             {
                 Text = "+",
-                FontSize = 18,
-                Foreground = new SolidColorBrush(Color.FromRgb(200, 210, 220)),
+                FontSize = 22,
+                FontWeight = FontWeights.Light,
+                Foreground = new SolidColorBrush(Color.FromRgb(195, 210, 225)),
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center
             };
@@ -419,14 +431,14 @@ namespace NetworkService.Views
             }
         }
 
-        private void RemoveConnectionsForSlot(Border slot)
+        private void RemoveConnectionsForSensor(TemperatureSensor sensor)
         {
-            if (slot == null) return;
+            if (sensor == null) return;
 
-            var toRemove = new List<Border[]>();
+            var toRemove = new List<TemperatureSensor[]>();
             foreach (var conn in connections)
             {
-                if (conn[0] == slot || conn[1] == slot)
+                if (conn[0] == sensor || conn[1] == sensor)
                     toRemove.Add(conn);
             }
             foreach (var conn in toRemove)
@@ -446,7 +458,7 @@ namespace NetworkService.Views
                         ConnectBtn.Content = "Connect Sensors";
                         ConnectBtn.Style = (Style)FindResource("NavButtonStyle");
                     }
-                    RemoveConnectionsForSlot(slot);
+                    RemoveConnectionsForSensor(sensor);
                     ClearSlot(slot);
                     var vm = DataContext as NetworkDisplayViewModel;
                     bool sensorStillExists = NetworkEntitiesViewModel.AllSensors != null &&
@@ -468,8 +480,12 @@ namespace NetworkService.Views
 
             foreach (var conn in connections)
             {
-                var p1 = GetSlotCenter(conn[0]);
-                var p2 = GetSlotCenter(conn[1]);
+                Border slot1, slot2;
+                if (!sensorSlotMap.TryGetValue(conn[0], out slot1)) continue;
+                if (!sensorSlotMap.TryGetValue(conn[1], out slot2)) continue;
+
+                var p1 = GetSlotCenter(slot1);
+                var p2 = GetSlotCenter(slot2);
 
                 if (p1 == null || p2 == null) continue;
 
