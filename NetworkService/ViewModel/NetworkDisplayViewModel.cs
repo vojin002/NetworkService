@@ -1,5 +1,6 @@
 using NetworkService.Helpers;
 using NetworkService.Model;
+using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
@@ -28,10 +29,13 @@ namespace NetworkService.ViewModel
         {
             if (e.NewItems != null)
             {
+                int insertIndex = e.NewStartingIndex;
                 foreach (TemperatureSensor sensor in e.NewItems)
                 {
-                    SensorsInTreeView.Add(sensor);
-                    AddToGroup(sensor);
+                    int at = Math.Min(insertIndex, SensorsInTreeView.Count);
+                    SensorsInTreeView.Insert(at, sensor);
+                    AddToGroupAtIndex(sensor, insertIndex);
+                    insertIndex++;
                 }
             }
             if (e.OldItems != null)
@@ -54,6 +58,37 @@ namespace NetworkService.ViewModel
         {
             get { return sensorGroups; }
             set { SetProperty(ref sensorGroups, value); }
+        }
+
+        private void AddToGroupAtIndex(TemperatureSensor sensor, int allSensorsIndex)
+        {
+            string typeName = sensor.Type.Name;
+            SensorTypeGroup group = null;
+
+            foreach (var g in SensorGroups)
+            {
+                if (g.TypeName == typeName)
+                {
+                    group = g;
+                    break;
+                }
+            }
+
+            if (group == null)
+            {
+                group = new SensorTypeGroup(typeName);
+                SensorGroups.Add(group);
+            }
+
+            int groupInsertIndex = 0;
+            for (int i = 0; i < allSensorsIndex && i < NetworkEntitiesViewModel.AllSensors.Count; i++)
+            {
+                if (NetworkEntitiesViewModel.AllSensors[i].Type.Name == typeName)
+                    groupInsertIndex++;
+            }
+
+            groupInsertIndex = Math.Min(groupInsertIndex, group.Sensors.Count);
+            group.Sensors.Insert(groupInsertIndex, sensor);
         }
 
         public void AddToGroup(TemperatureSensor sensor)

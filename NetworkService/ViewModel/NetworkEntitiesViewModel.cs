@@ -211,9 +211,10 @@ namespace NetworkService.ViewModel
 
             var deletedSensor = SelectedSensor;
             int deletedIndex = AllSensors.IndexOf(deletedSensor);
+            int filteredIndex = FilteredSensors.IndexOf(deletedSensor);
             AllSensors.Remove(deletedSensor);
+            FilteredSensors.Remove(deletedSensor);
             ShowDeleteConfirmation = false;
-            OnClearSearch();
             RestartSimulator();
 
             if (ShowDeleteWithUndo != null)
@@ -222,9 +223,8 @@ namespace NetworkService.ViewModel
                     deletedSensor.Name + " (" + deletedSensor.Type.Name + ")",
                     () =>
                     {
-                        int insertAt = Math.Min(deletedIndex, AllSensors.Count);
-                        AllSensors.Insert(insertAt, deletedSensor);
-                        OnClearSearch();
+                        AllSensors.Insert(Math.Min(deletedIndex, AllSensors.Count), deletedSensor);
+                        FilteredSensors.Insert(Math.Min(filteredIndex, FilteredSensors.Count), deletedSensor);
                         RestartSimulator();
                         if (ShowNotification != null)
                             ShowNotification("Restored", deletedSensor.Name + " restored", NotificationType.Success);
