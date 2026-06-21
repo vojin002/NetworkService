@@ -5,7 +5,7 @@
         xmlns:viewModel="clr-namespace:NetworkService.ViewModel"
         xmlns:views="clr-namespace:NetworkService.Views"
         Title="Network Service - Reactor Monitoring"
-        Height="720" Width="1280"
+        Height="720" Width="1440"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource BackgroundBrush}">
 
@@ -33,7 +33,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="480"/>
+            <ColumnDefinition Width="620"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
@@ -50,7 +50,7 @@
                 BorderThickness="0,0,0,1">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="480"/>
+                    <ColumnDefinition Width="620"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 

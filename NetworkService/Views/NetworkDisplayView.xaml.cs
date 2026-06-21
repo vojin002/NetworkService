@@ -326,7 +326,7 @@ namespace NetworkService.Views
                 Text = sensor.Name,
                 Foreground = new SolidColorBrush(Color.FromRgb(0, 120, 212)),
                 FontWeight = FontWeights.Bold,
-                FontSize = 11,
+                FontSize = 13,
                 TextWrapping = TextWrapping.Wrap,
                 VerticalAlignment = VerticalAlignment.Center
             };
@@ -337,14 +337,14 @@ namespace NetworkService.Views
             {
                 Text = "ID: " + sensor.Id,
                 Foreground = new SolidColorBrush(Color.FromRgb(100, 110, 120)),
-                FontSize = 10,
+                FontSize = 12,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 TextAlignment = TextAlignment.Center
             };
 
             var valueText = new TextBlock
             {
-                FontSize = 10,
+                FontSize = 12,
                 Foreground = new SolidColorBrush(Color.FromRgb(80, 80, 80)),
                 HorizontalAlignment = HorizontalAlignment.Center,
                 TextAlignment = TextAlignment.Center
@@ -356,7 +356,7 @@ namespace NetworkService.Views
             };
             valueText.SetBinding(TextBlock.TextProperty, valueBinding);
 
-            var statusText = new TextBlock { FontSize = 10, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, TextAlignment = TextAlignment.Center };
+            var statusText = new TextBlock { FontSize = 12, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, TextAlignment = TextAlignment.Center };
             statusText.SetBinding(TextBlock.TextProperty, new System.Windows.Data.Binding("IsValueValid")
             {
                 Source = sensor,

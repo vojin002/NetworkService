@@ -184,10 +184,27 @@ namespace NetworkService.ViewModel
                 }
             }
 
+            int nameNumber = 1;
+            while (true)
+            {
+                string candidate = "Reactor_" + nameNumber;
+                bool taken = false;
+                foreach (var s in AllSensors)
+                {
+                    if (s.Name == candidate)
+                    {
+                        taken = true;
+                        break;
+                    }
+                }
+                if (!taken) break;
+                nameNumber++;
+            }
+
             var newSensor = new TemperatureSensor
             {
                 Id = newId,
-                Name = SelectedTypeToAdd.Name + "_" + newId,
+                Name = "Reactor_" + nameNumber,
                 Type = new SensorType { Name = SelectedTypeToAdd.Name, ImagePath = SelectedTypeToAdd.ImagePath }
             };
 

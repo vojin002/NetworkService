@@ -40,6 +40,7 @@
                           Background="Transparent"
                           Foreground="{StaticResource TextBrush}"
                           BorderThickness="0"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                           PreviewMouseLeftButtonDown="TreeView_PreviewMouseLeftButtonDown"
                           PreviewMouseMove="TreeView_PreviewMouseMove">
                     <TreeView.Resources>
@@ -53,11 +54,11 @@
                             <TextBlock Text="{Binding TypeName}"
                                        Foreground="{StaticResource AccentBrush}"
                                        FontWeight="Bold"
-                                       FontSize="12"/>
+                                       FontSize="14"/>
                             <HierarchicalDataTemplate.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" Margin="0,2" Cursor="Hand">
-                                        <Ellipse Width="7" Height="7"
+                                        <Ellipse Width="8" Height="8"
                                                  VerticalAlignment="Center"
                                                  Margin="0,0,5,0">
                                             <Ellipse.Style>
@@ -71,11 +72,11 @@
                                                 </Style>
                                             </Ellipse.Style>
                                         </Ellipse>
-                                        <Image Source="{Binding Type.ImagePath}" Width="16" Height="16"
+                                        <Image Source="{Binding Type.ImagePath}" Width="18" Height="18"
                                                Margin="0,0,5,0" VerticalAlignment="Center"/>
                                         <TextBlock Text="{Binding Name}"
                                                    Foreground="{StaticResource TextBrush}"
-                                                   FontSize="12"
+                                                   FontSize="13"
                                                    VerticalAlignment="Center"
                                                    ToolTip="Drag to place on the grid"/>
                                     </StackPanel>
