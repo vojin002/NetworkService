@@ -29,6 +29,17 @@ namespace NetworkService.ViewModel
 
             networkEntitiesViewModel = new NetworkEntitiesViewModel();
             networkEntitiesViewModel.ShowNotification = ShowToast;
+            networkEntitiesViewModel.ShowDeleteWithUndo = (title, message, undoAction) =>
+            {
+                notificationManager.Show(new NotificationContent
+                {
+                    Title = title,
+                    Message = message,
+                    Type = NotificationType.Warning,
+                    LeftButtonContent = "Undo",
+                    LeftButtonAction = () => Application.Current.Dispatcher.Invoke(undoAction)
+                }, "WindowNotificationArea");
+            };
             NetworkDisplayVM = new NetworkDisplayViewModel();
             measurementGraphViewModel = new MeasurementGraphViewModel();
 

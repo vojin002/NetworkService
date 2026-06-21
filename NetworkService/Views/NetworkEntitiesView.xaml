@@ -155,7 +155,8 @@
             </StackPanel>
         </Grid>
 
-        <DataGrid Grid.Row="3"
+        <Grid Grid.Row="3">
+        <DataGrid
                   ItemsSource="{Binding FilteredSensors}"
                   SelectedItem="{Binding SelectedSensor}"
                   AutoGenerateColumns="False"
@@ -262,5 +263,25 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
+
+            <Border Background="{StaticResource PanelBrush}">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding FilteredSensors.Count}" Value="0">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <TextBlock Text="No sensors match your search."
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           FontStyle="Italic"
+                           Foreground="{StaticResource BorderBrush}"
+                           FontSize="13"/>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>

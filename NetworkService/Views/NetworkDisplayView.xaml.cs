@@ -18,6 +18,10 @@ namespace NetworkService.Views
         private bool connectMode = false;
         private Border firstConnectBorder = null;
 
+        private Point _dragStartPoint;
+        private bool _pendingTreeDrag = false;
+        private bool _pendingSlotDrag = false;
+
         private List<TemperatureSensor[]> connections = new List<TemperatureSensor[]>();
         private Dictionary<TemperatureSensor, System.ComponentModel.PropertyChangedEventHandler> sensorHandlers
             = new Dictionary<TemperatureSensor, System.ComponentModel.PropertyChangedEventHandler>();
@@ -73,6 +77,7 @@ namespace NetworkService.Views
                 slot.Drop += Slot_Drop;
                 slot.DragOver += Slot_DragOver;
                 slot.MouseLeftButtonDown += Slot_MouseLeftButtonDown;
+                slot.MouseMove += Slot_MouseMove;
                 CanvasGrid.Children.Add(slot);
             }
         }
@@ -104,7 +109,26 @@ namespace NetworkService.Views
 
             draggedSensor = sensor;
             dragSourceBorder = null;
-            DragDrop.DoDragDrop(SensorTreeView, sensor, DragDropEffects.Move);
+            _dragStartPoint = e.GetPosition(null);
+            _pendingTreeDrag = true;
+        }
+
+        private void TreeView_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (!_pendingTreeDrag || e.LeftButton != MouseButtonState.Pressed)
+            {
+                _pendingTreeDrag = false;
+                return;
+            }
+
+            Point pos = e.GetPosition(null);
+            if (Math.Abs(pos.X - _dragStartPoint.X) > SystemParameters.MinimumHorizontalDragDistance ||
+                Math.Abs(pos.Y - _dragStartPoint.Y) > SystemParameters.MinimumVerticalDragDistance)
+            {
+                _pendingTreeDrag = false;
+                if (draggedSensor != null)
+                    DragDrop.DoDragDrop(SensorTreeView, draggedSensor, DragDropEffects.Move);
+            }
         }
 
         private void Slot_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -123,7 +147,26 @@ namespace NetworkService.Views
 
             draggedSensor = sensor;
             dragSourceBorder = slot;
-            DragDrop.DoDragDrop(slot, sensor, DragDropEffects.Move);
+            _dragStartPoint = e.GetPosition(null);
+            _pendingSlotDrag = true;
+        }
+
+        private void Slot_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!_pendingSlotDrag || e.LeftButton != MouseButtonState.Pressed)
+            {
+                _pendingSlotDrag = false;
+                return;
+            }
+
+            Point pos = e.GetPosition(null);
+            if (Math.Abs(pos.X - _dragStartPoint.X) > SystemParameters.MinimumHorizontalDragDistance ||
+                Math.Abs(pos.Y - _dragStartPoint.Y) > SystemParameters.MinimumVerticalDragDistance)
+            {
+                _pendingSlotDrag = false;
+                if (draggedSensor != null && dragSourceBorder != null)
+                    DragDrop.DoDragDrop(dragSourceBorder, draggedSensor, DragDropEffects.Move);
+            }
         }
 
         private void HandleConnectClick(Border slot)

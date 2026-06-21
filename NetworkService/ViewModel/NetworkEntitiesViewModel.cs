@@ -11,6 +11,7 @@ namespace NetworkService.ViewModel
         public static ObservableCollection<TemperatureSensor> AllSensors { get; set; }
 
         public Action<string, string, NotificationType> ShowNotification { get; set; }
+        public Action<string, string, Action> ShowDeleteWithUndo { get; set; }
 
         private ObservableCollection<TemperatureSensor> filteredSensors;
         private TemperatureSensor selectedSensor;
@@ -208,14 +209,26 @@ namespace NetworkService.ViewModel
         {
             if (SelectedSensor == null) return;
 
-            string deletedName = SelectedSensor.Name;
-            AllSensors.Remove(SelectedSensor);
+            var deletedSensor = SelectedSensor;
+            int deletedIndex = AllSensors.IndexOf(deletedSensor);
+            AllSensors.Remove(deletedSensor);
             ShowDeleteConfirmation = false;
             OnClearSearch();
             RestartSimulator();
 
-            if (ShowNotification != null)
-                ShowNotification("Sensor Deleted", deletedName, NotificationType.Warning);
+            if (ShowDeleteWithUndo != null)
+                ShowDeleteWithUndo(
+                    "Sensor Deleted",
+                    deletedSensor.Name + " (" + deletedSensor.Type.Name + ")",
+                    () =>
+                    {
+                        int insertAt = Math.Min(deletedIndex, AllSensors.Count);
+                        AllSensors.Insert(insertAt, deletedSensor);
+                        OnClearSearch();
+                        RestartSimulator();
+                        if (ShowNotification != null)
+                            ShowNotification("Restored", deletedSensor.Name + " restored", NotificationType.Success);
+                    });
         }
 
         private void OnCancelDelete()

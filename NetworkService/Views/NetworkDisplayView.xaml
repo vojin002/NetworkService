@@ -40,7 +40,8 @@
                           Background="Transparent"
                           Foreground="{StaticResource TextBrush}"
                           BorderThickness="0"
-                          PreviewMouseLeftButtonDown="TreeView_PreviewMouseLeftButtonDown">
+                          PreviewMouseLeftButtonDown="TreeView_PreviewMouseLeftButtonDown"
+                          PreviewMouseMove="TreeView_PreviewMouseMove">
                     <TreeView.Resources>
                         <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#E3F2FD"/>
                         <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#1A202C"/>
