@@ -164,9 +164,14 @@ namespace MeteringSimulator
         {
             StartButton.IsEnabled = false;
             RestartButton.IsEnabled = true;
-            //Proveri broj objekata pod monitoringom
             askForCount();
-            //Pocni prijavljivanje novih vrednosti za objekte
+            if (numObjects <= 0)
+            {
+                MessageBox.Show("Could not connect to NetworkService or no sensors found.");
+                StartButton.IsEnabled = true;
+                RestartButton.IsEnabled = false;
+                return;
+            }
             startReporting();
         }
 
