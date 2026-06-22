@@ -11,13 +11,10 @@ namespace NetworkService.ViewModel
         private ObservableCollection<TemperatureSensor> sensorsInTreeView;
         private ObservableCollection<SensorTypeGroup> sensorGroups;
 
-        public MyICommand AutoArrangeCommand { get; set; }
-
         public NetworkDisplayViewModel()
         {
             SensorsInTreeView = new ObservableCollection<TemperatureSensor>();
             SensorGroups = new ObservableCollection<SensorTypeGroup>();
-            AutoArrangeCommand = new MyICommand(OnAutoArrange);
 
             RefreshTreeView();
 
@@ -60,11 +57,9 @@ namespace NetworkService.ViewModel
             set { SetProperty(ref sensorGroups, value); }
         }
 
-        private void AddToGroupAtIndex(TemperatureSensor sensor, int allSensorsIndex)
+        private SensorTypeGroup FindOrCreateGroup(string typeName)
         {
-            string typeName = sensor.Type.Name;
             SensorTypeGroup group = null;
-
             foreach (var g in SensorGroups)
             {
                 if (g.TypeName == typeName)
@@ -73,17 +68,22 @@ namespace NetworkService.ViewModel
                     break;
                 }
             }
-
             if (group == null)
             {
                 group = new SensorTypeGroup(typeName);
                 SensorGroups.Add(group);
             }
+            return group;
+        }
+
+        private void AddToGroupAtIndex(TemperatureSensor sensor, int allSensorsIndex)
+        {
+            SensorTypeGroup group = FindOrCreateGroup(sensor.Type.Name);
 
             int groupInsertIndex = 0;
             for (int i = 0; i < allSensorsIndex && i < NetworkEntitiesViewModel.AllSensors.Count; i++)
             {
-                if (NetworkEntitiesViewModel.AllSensors[i].Type.Name == typeName)
+                if (NetworkEntitiesViewModel.AllSensors[i].Type.Name == sensor.Type.Name)
                     groupInsertIndex++;
             }
 
@@ -93,24 +93,7 @@ namespace NetworkService.ViewModel
 
         public void AddToGroup(TemperatureSensor sensor)
         {
-            string typeName = sensor.Type.Name;
-            SensorTypeGroup group = null;
-
-            foreach (var g in SensorGroups)
-            {
-                if (g.TypeName == typeName)
-                {
-                    group = g;
-                    break;
-                }
-            }
-
-            if (group == null)
-            {
-                group = new SensorTypeGroup(typeName);
-                SensorGroups.Add(group);
-            }
-
+            SensorTypeGroup group = FindOrCreateGroup(sensor.Type.Name);
             group.Sensors.Add(sensor);
         }
 
@@ -142,8 +125,5 @@ namespace NetworkService.ViewModel
             }
         }
 
-        private void OnAutoArrange()
-        {
-        }
     }
 }

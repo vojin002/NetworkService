@@ -23,7 +23,6 @@ namespace NetworkService.ViewModel
         private string selectedSavedSearch;
         private ObservableCollection<string> savedSearches;
 
-        private string nameError;
         private string typeError;
 
         private bool showDeleteConfirmation;
@@ -140,12 +139,6 @@ namespace NetworkService.ViewModel
         public ObservableCollection<SensorType> AvailableTypes
         {
             get { return availableTypes; }
-        }
-
-        public string NameError
-        {
-            get { return nameError; }
-            set { SetProperty(ref nameError, value); }
         }
 
         public string TypeError

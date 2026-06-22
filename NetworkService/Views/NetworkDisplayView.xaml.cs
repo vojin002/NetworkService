@@ -220,7 +220,11 @@ namespace NetworkService.Views
             var sensor = slot.Tag as TemperatureSensor;
             if (sensor != null)
             {
-                UpdateSlotBorder(slot, sensor);
+                if (sensor.IsValueValid)
+                    slot.BorderBrush = new SolidColorBrush(Color.FromRgb(0, 120, 212));
+                else
+                    slot.BorderBrush = new SolidColorBrush(Color.FromRgb(211, 47, 47));
+                slot.BorderThickness = new Thickness(3, 1, 1, 1);
             }
             else
             {
@@ -287,75 +291,20 @@ namespace NetworkService.Views
 
         private void SetSlotContent(Border slot, TemperatureSensor sensor)
         {
-            var currentSensor = slot.Tag as TemperatureSensor;
-            if (currentSensor != null && currentSensor != sensor && sensorHandlers.ContainsKey(currentSensor))
+            var oldSensor = slot.Tag as TemperatureSensor;
+            if (oldSensor != null && sensorSlotMap.ContainsKey(oldSensor) && sensorSlotMap[oldSensor] == slot)
             {
-                Border registeredSlot;
-                if (!sensorSlotMap.TryGetValue(currentSensor, out registeredSlot) || registeredSlot == slot)
-                {
-                    currentSensor.PropertyChanged -= sensorHandlers[currentSensor];
-                    sensorHandlers.Remove(currentSensor);
-                    sensorSlotMap.Remove(currentSensor);
-                }
+                oldSensor.PropertyChanged -= sensorHandlers[oldSensor];
+                sensorHandlers.Remove(oldSensor);
+                sensorSlotMap.Remove(oldSensor);
             }
 
             var panel = new StackPanel { Margin = new Thickness(4) };
+            panel.Children.Add(new TextBlock { Text = sensor.Name, Foreground = new SolidColorBrush(Color.FromRgb(0, 120, 212)), FontWeight = FontWeights.Bold, FontSize = 13, HorizontalAlignment = HorizontalAlignment.Center });
+            panel.Children.Add(new TextBlock { Text = "ID: " + sensor.Id, Foreground = new SolidColorBrush(Color.FromRgb(100, 110, 120)), FontSize = 12, HorizontalAlignment = HorizontalAlignment.Center });
 
-            var headerRow = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 0, 2) };
-
-            if (sensor.Type != null && !string.IsNullOrEmpty(sensor.Type.ImagePath))
-            {
-                var typeImg = new System.Windows.Controls.Image
-                {
-                    Width = 18,
-                    Height = 18,
-                    Margin = new Thickness(0, 0, 4, 0),
-                    VerticalAlignment = VerticalAlignment.Center
-                };
-                try
-                {
-                    typeImg.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri(sensor.Type.ImagePath, UriKind.Absolute));
-                }
-                catch { }
-                headerRow.Children.Add(typeImg);
-            }
-
-            var nameText = new TextBlock
-            {
-                Text = sensor.Name,
-                Foreground = new SolidColorBrush(Color.FromRgb(0, 120, 212)),
-                FontWeight = FontWeights.Bold,
-                FontSize = 13,
-                TextWrapping = TextWrapping.Wrap,
-                VerticalAlignment = VerticalAlignment.Center
-            };
-            headerRow.Children.Add(nameText);
-            panel.Children.Add(headerRow);
-
-            var idText = new TextBlock
-            {
-                Text = "ID: " + sensor.Id,
-                Foreground = new SolidColorBrush(Color.FromRgb(100, 110, 120)),
-                FontSize = 12,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                TextAlignment = TextAlignment.Center
-            };
-
-            var valueText = new TextBlock
-            {
-                FontSize = 12,
-                Foreground = new SolidColorBrush(Color.FromRgb(80, 80, 80)),
-                HorizontalAlignment = HorizontalAlignment.Center,
-                TextAlignment = TextAlignment.Center
-            };
-            var valueBinding = new System.Windows.Data.Binding("LastMeasuredValue") { Source = sensor, StringFormat = "Val: {0:F1} °C" };
-            valueText.SetBinding(TextBlock.TextProperty, valueBinding);
-
-            var statusText = new TextBlock { FontSize = 12, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, TextAlignment = TextAlignment.Center };
-            statusText.SetBinding(TextBlock.TextProperty, new System.Windows.Data.Binding("IsValueValid") { Source = sensor, Converter = new BoolToStatusConverter() });
-            statusText.SetBinding(TextBlock.ForegroundProperty, new System.Windows.Data.Binding("IsValueValid") { Source = sensor, Converter = new BoolToColorConverter() });
-
-            panel.Children.Add(idText);
+            var valueText = new TextBlock { FontSize = 12, HorizontalAlignment = HorizontalAlignment.Center };
+            var statusText = new TextBlock { FontSize = 12, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center };
             panel.Children.Add(valueText);
             panel.Children.Add(statusText);
 
@@ -363,32 +312,32 @@ namespace NetworkService.Views
             slot.Tag = sensor;
             slot.Background = new SolidColorBrush(Colors.White);
 
-            UpdateSlotBorder(slot, sensor);
+            UpdateSlotValues(slot, sensor, valueText, statusText);
 
-            if (sensorHandlers.ContainsKey(sensor))
-            {
-                sensor.PropertyChanged -= sensorHandlers[sensor];
-                sensorHandlers.Remove(sensor);
-                sensorSlotMap.Remove(sensor);
-            }
-
-            PropertyChangedEventHandler handler = (s, args) =>
-            {
-                if (args.PropertyName == "LastMeasuredValue" || args.PropertyName == "IsValueValid")
-                    UpdateSlotBorder(slot, sensor);
-            };
+            PropertyChangedEventHandler handler = (s, args) => UpdateSlotValues(slot, sensor, valueText, statusText);
             sensor.PropertyChanged += handler;
             sensorHandlers[sensor] = handler;
             sensorSlotMap[sensor] = slot;
         }
 
-        private void UpdateSlotBorder(Border slot, TemperatureSensor sensor)
+        private void UpdateSlotValues(Border slot, TemperatureSensor sensor, TextBlock valueText, TextBlock statusText)
         {
-            if (!sensor.IsValueValid)
-                slot.BorderBrush = new SolidColorBrush(Color.FromRgb(211, 47, 47));
+            if (sensor.LastMeasuredValue.HasValue)
+                valueText.Text = "Val: " + sensor.LastMeasuredValue.Value.ToString("F1") + " °C";
             else
+                valueText.Text = "Val: N/A";
+            if (sensor.IsValueValid)
+            {
+                statusText.Text = "Normal";
+                statusText.Foreground = new SolidColorBrush(Color.FromRgb(0, 150, 100));
                 slot.BorderBrush = new SolidColorBrush(Color.FromRgb(0, 120, 212));
-
+            }
+            else
+            {
+                statusText.Text = "! ALARM";
+                statusText.Foreground = new SolidColorBrush(Color.FromRgb(211, 47, 47));
+                slot.BorderBrush = new SolidColorBrush(Color.FromRgb(211, 47, 47));
+            }
             slot.BorderThickness = new Thickness(3, 1, 1, 1);
         }
 
@@ -552,33 +501,4 @@ namespace NetworkService.Views
         }
     }
 
-    public class BoolToStatusConverter : System.Windows.Data.IValueConverter
-    {
-        public object Convert(object value, System.Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            bool b = (bool)value;
-            return b ? "Normal" : "! ALARM";
-        }
-
-        public object ConvertBack(object value, System.Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new System.NotImplementedException();
-        }
-    }
-
-    public class BoolToColorConverter : System.Windows.Data.IValueConverter
-    {
-        public object Convert(object value, System.Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            bool b = (bool)value;
-            if (b)
-                return new SolidColorBrush(Color.FromRgb(0, 150, 100));
-            return new SolidColorBrush(Color.FromRgb(211, 47, 47));
-        }
-
-        public object ConvertBack(object value, System.Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new System.NotImplementedException();
-        }
-    }
 }

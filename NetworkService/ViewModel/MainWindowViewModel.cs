@@ -124,10 +124,7 @@ namespace NetworkService.ViewModel
                                 double value;
                                 if (double.TryParse(parts[1].Trim(), out value))
                                 {
-                                    Application.Current.Dispatcher.Invoke(() =>
-                                    {
-                                        UpdateSensorValue(sensorName, value);
-                                    });
+                                    Application.Current.Dispatcher.Invoke(() => UpdateSensorValue(sensorName, value));
                                 }
                             }
                         }
