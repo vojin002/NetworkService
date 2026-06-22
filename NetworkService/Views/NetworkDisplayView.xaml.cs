@@ -2,6 +2,7 @@ using NetworkService.Model;
 using NetworkService.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -23,10 +24,8 @@ namespace NetworkService.Views
         private bool _pendingSlotDrag = false;
 
         private List<TemperatureSensor[]> connections = new List<TemperatureSensor[]>();
-        private Dictionary<TemperatureSensor, System.ComponentModel.PropertyChangedEventHandler> sensorHandlers
-            = new Dictionary<TemperatureSensor, System.ComponentModel.PropertyChangedEventHandler>();
-        private Dictionary<TemperatureSensor, Border> sensorSlotMap
-            = new Dictionary<TemperatureSensor, Border>();
+        private Dictionary<TemperatureSensor, PropertyChangedEventHandler> sensorHandlers = new Dictionary<TemperatureSensor, PropertyChangedEventHandler>();
+        private Dictionary<TemperatureSensor, Border> sensorSlotMap = new Dictionary<TemperatureSensor, Border>();
 
         public NetworkDisplayView()
         {
@@ -93,7 +92,7 @@ namespace NetworkService.Views
         {
             var element = e.OriginalSource as FrameworkElement;
 
-            if (element?.DataContext is NetworkService.Model.SensorTypeGroup)
+            if (element != null && element.DataContext is SensorTypeGroup)
             {
                 var treeViewItem = FindTreeViewItem(element);
                 if (treeViewItem != null)
@@ -104,7 +103,9 @@ namespace NetworkService.Views
                 }
             }
 
-            var sensor = element?.DataContext as TemperatureSensor;
+            TemperatureSensor sensor = null;
+            if (element != null)
+                sensor = element.DataContext as TemperatureSensor;
             if (sensor == null) return;
 
             draggedSensor = sensor;
@@ -122,8 +123,8 @@ namespace NetworkService.Views
             }
 
             Point pos = e.GetPosition(null);
-            if (Math.Abs(pos.X - _dragStartPoint.X) > SystemParameters.MinimumHorizontalDragDistance ||
-                Math.Abs(pos.Y - _dragStartPoint.Y) > SystemParameters.MinimumVerticalDragDistance)
+            bool movedEnough = Math.Abs(pos.X - _dragStartPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(pos.Y - _dragStartPoint.Y) > SystemParameters.MinimumVerticalDragDistance;
+            if (movedEnough)
             {
                 _pendingTreeDrag = false;
                 if (draggedSensor != null)
@@ -160,8 +161,8 @@ namespace NetworkService.Views
             }
 
             Point pos = e.GetPosition(null);
-            if (Math.Abs(pos.X - _dragStartPoint.X) > SystemParameters.MinimumHorizontalDragDistance ||
-                Math.Abs(pos.Y - _dragStartPoint.Y) > SystemParameters.MinimumVerticalDragDistance)
+            bool movedEnough = Math.Abs(pos.X - _dragStartPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(pos.Y - _dragStartPoint.Y) > SystemParameters.MinimumVerticalDragDistance;
+            if (movedEnough)
             {
                 _pendingSlotDrag = false;
                 if (draggedSensor != null && dragSourceBorder != null)
@@ -194,8 +195,7 @@ namespace NetworkService.Views
                 bool alreadyConnected = false;
                 foreach (var conn in connections)
                 {
-                    if ((conn[0] == sensorA && conn[1] == sensorB) ||
-                        (conn[0] == sensorB && conn[1] == sensorA))
+                    if ((conn[0] == sensorA && conn[1] == sensorB) || (conn[0] == sensorB && conn[1] == sensorA))
                     {
                         alreadyConnected = true;
                         break;
@@ -314,8 +314,7 @@ namespace NetworkService.Views
                 };
                 try
                 {
-                    typeImg.Source = new System.Windows.Media.Imaging.BitmapImage(
-                        new Uri(sensor.Type.ImagePath, UriKind.Absolute));
+                    typeImg.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri(sensor.Type.ImagePath, UriKind.Absolute));
                 }
                 catch { }
                 headerRow.Children.Add(typeImg);
@@ -349,24 +348,12 @@ namespace NetworkService.Views
                 HorizontalAlignment = HorizontalAlignment.Center,
                 TextAlignment = TextAlignment.Center
             };
-            var valueBinding = new System.Windows.Data.Binding("LastMeasuredValue")
-            {
-                Source = sensor,
-                StringFormat = "Val: {0:F1} °C"
-            };
+            var valueBinding = new System.Windows.Data.Binding("LastMeasuredValue") { Source = sensor, StringFormat = "Val: {0:F1} °C" };
             valueText.SetBinding(TextBlock.TextProperty, valueBinding);
 
             var statusText = new TextBlock { FontSize = 12, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, TextAlignment = TextAlignment.Center };
-            statusText.SetBinding(TextBlock.TextProperty, new System.Windows.Data.Binding("IsValueValid")
-            {
-                Source = sensor,
-                Converter = new BoolToStatusConverter()
-            });
-            statusText.SetBinding(TextBlock.ForegroundProperty, new System.Windows.Data.Binding("IsValueValid")
-            {
-                Source = sensor,
-                Converter = new BoolToColorConverter()
-            });
+            statusText.SetBinding(TextBlock.TextProperty, new System.Windows.Data.Binding("IsValueValid") { Source = sensor, Converter = new BoolToStatusConverter() });
+            statusText.SetBinding(TextBlock.ForegroundProperty, new System.Windows.Data.Binding("IsValueValid") { Source = sensor, Converter = new BoolToColorConverter() });
 
             panel.Children.Add(idText);
             panel.Children.Add(valueText);
@@ -385,7 +372,7 @@ namespace NetworkService.Views
                 sensorSlotMap.Remove(sensor);
             }
 
-            System.ComponentModel.PropertyChangedEventHandler handler = (s, args) =>
+            PropertyChangedEventHandler handler = (s, args) =>
             {
                 if (args.PropertyName == "LastMeasuredValue" || args.PropertyName == "IsValueValid")
                     UpdateSlotBorder(slot, sensor);
@@ -504,8 +491,7 @@ namespace NetworkService.Views
                     RemoveConnectionsForSensor(sensor);
                     ClearSlot(slot);
                     var vm = DataContext as NetworkDisplayViewModel;
-                    bool sensorStillExists = NetworkEntitiesViewModel.AllSensors != null &&
-                                            NetworkEntitiesViewModel.AllSensors.Contains(sensor);
+                    bool sensorStillExists = NetworkEntitiesViewModel.AllSensors != null && NetworkEntitiesViewModel.AllSensors.Contains(sensor);
                     if (vm != null && sensorStillExists)
                     {
                         vm.SensorsInTreeView.Add(sensor);

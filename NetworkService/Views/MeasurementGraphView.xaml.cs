@@ -84,7 +84,6 @@ namespace NetworkService.Views
             double maxVal = 450;
             double minVal = 150;
 
-
             var centerPoints = new List<Point>();
 
             for (int i = 0; i < count; i++)
@@ -131,9 +130,7 @@ namespace NetworkService.Views
             for (int i = 0; i < count; i++)
             {
                 bool isValid = points[i].IsValid;
-                var fillColor = isValid
-                    ? Color.FromRgb(0, 184, 148)
-                    : Color.FromRgb(230, 57, 70);
+                var fillColor = isValid ? Color.FromRgb(0, 184, 148) : Color.FromRgb(230, 57, 70);
 
                 var circle = new Ellipse
                 {

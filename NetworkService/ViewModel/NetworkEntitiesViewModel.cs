@@ -235,17 +235,17 @@ namespace NetworkService.ViewModel
             RestartSimulator();
 
             if (ShowDeleteWithUndo != null)
-                ShowDeleteWithUndo(
-                    "Sensor Deleted",
-                    deletedSensor.Name + " (" + deletedSensor.Type.Name + ")",
-                    () =>
-                    {
-                        AllSensors.Insert(Math.Min(deletedIndex, AllSensors.Count), deletedSensor);
-                        FilteredSensors.Insert(Math.Min(filteredIndex, FilteredSensors.Count), deletedSensor);
-                        RestartSimulator();
-                        if (ShowNotification != null)
-                            ShowNotification("Restored", deletedSensor.Name + " restored", NotificationType.Success);
-                    });
+            {
+                string msg = deletedSensor.Name + " (" + deletedSensor.Type.Name + ")";
+                ShowDeleteWithUndo("Sensor Deleted", msg, () =>
+                {
+                    AllSensors.Insert(Math.Min(deletedIndex, AllSensors.Count), deletedSensor);
+                    FilteredSensors.Insert(Math.Min(filteredIndex, FilteredSensors.Count), deletedSensor);
+                    RestartSimulator();
+                    if (ShowNotification != null)
+                        ShowNotification("Restored", deletedSensor.Name + " restored", NotificationType.Success);
+                });
+            }
         }
 
         private void OnCancelDelete()
@@ -322,8 +322,7 @@ namespace NetworkService.ViewModel
             foreach (var p in processes)
                 p.Kill();
 
-            string simulatorPath = System.IO.Path.Combine(
-                System.AppDomain.CurrentDomain.BaseDirectory, "..\\..\\..\\..\\..\\MeteringSimulator\\MeteringSimulator\\bin\\Debug\\MeteringSimulator.exe");
+            string simulatorPath = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "..\\..\\..\\..\\..\\MeteringSimulator\\MeteringSimulator\\bin\\Debug\\MeteringSimulator.exe");
 
             if (System.IO.File.Exists(simulatorPath))
                 System.Diagnostics.Process.Start(simulatorPath);

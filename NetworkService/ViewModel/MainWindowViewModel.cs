@@ -111,8 +111,7 @@ namespace NetworkService.ViewModel
 
                         if (incomming.Equals("Need object count"))
                         {
-                            int count = NetworkEntitiesViewModel.AllSensors != null
-                                ? NetworkEntitiesViewModel.AllSensors.Count : 0;
+                            int count = NetworkEntitiesViewModel.AllSensors != null ? NetworkEntitiesViewModel.AllSensors.Count : 0;
                             byte[] data = System.Text.Encoding.ASCII.GetBytes(count.ToString());
                             stream.Write(data, 0, data.Length);
                         }
